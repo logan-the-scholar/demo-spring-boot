@@ -5,90 +5,43 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
 @RestController()
 @RequestMapping("property")
 public class PropertyController {
+    PropertyServiceImpl propertyService = new PropertyServiceImpl();
 
-    private List<PropertyModel> properties = new ArrayList(Arrays.asList(
-            new PropertyModel(128932, "pepito", "Calle ficticia 123", 2),
-            new PropertyModel(428932,"ludovico", "Peluche street", 5))
-    );
-
-    @GetMapping("/get-all")
+    @GetMapping
     public ResponseEntity<List<PropertyModel>> getAll() {
-          return ResponseEntity.ok(properties);
+        return ResponseEntity.ok(propertyService.getAll());
     }
 
-    @GetMapping("/get/{owner}")
+    @GetMapping("/by-owner/{owner}")
     public ResponseEntity<?> getByOwner(@PathVariable String owner) {
-        Optional<PropertyModel> optional = properties.stream().filter(p -> p.getOwner().equalsIgnoreCase(owner))
-                .reduce((p, c) -> p).stream().findFirst();
-
-        if(optional.isPresent()) {
-            return ResponseEntity.ok(optional);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Property not found");
-        }
+        return propertyService.getByOwner(owner);
     }
 
-    @PostMapping("/new")
-    public ResponseEntity<PropertyModel> postProperty(@RequestBody PropertyModel property) {
-        properties.add(property);
-        return ResponseEntity.ok(property);
+    @PostMapping
+    public ResponseEntity<?> postProperty(@RequestBody PropertyModel property) {
+        URI location = propertyService.create(property);
+        return ResponseEntity.created(location).build();
     }
 
-    @PutMapping("/modify-all/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<?> putProperty(@PathVariable int id, @RequestBody PropertyModel property) {
-        Optional<PropertyModel> optional = properties.stream().filter(p -> p.getID() == id).findFirst().map(p -> {
-            p.setAddress(property.getAddress());
-            p.setOwner(property.getOwner());
-            p.setRooms(property.getRooms());
-            return p;
-        });
-
-        if(optional.isPresent()) {
-            return ResponseEntity.status(HttpStatus.OK).body("Modified successfully");
-        } else {
-            return ResponseEntity.status((HttpStatus.NOT_FOUND)).body("Property not found");
-        }
+        return propertyService.modifyAll(id, property);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteProperty(@PathVariable int id) {
-        Optional<Boolean> optional = (new ArrayList<>(properties)).stream().filter(p -> p.getID() == id)
-                .findFirst().map(p -> properties.remove(p));
-
-        if(optional.isPresent()) {
-            return ResponseEntity.status(HttpStatus.OK).body("Deleted successfully");
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Property not found");
-        }
+        return propertyService.delete(id);
     }
 
-    @PatchMapping("/modify/{id}")
-    public Optional<PropertyModel> patchProperty(@PathVariable int id, @RequestBody PropertyModel property) {
-        return properties.stream().reduce((p, i) -> {
-            if(p.getID() == id) {
-                if(property.getOwner() != null){
-                    p.setOwner(property.getOwner());
-                }
-//                if(property.getRooms() != null){
-//                    p.setRooms(property.getRooms());
-//                }
-                System.out.println(property.getRooms());
-                if(property.getAddress() != null){
-                    p.setAddress(property.getAddress());
-                }
-
-                return p;
-            } else {
-                return null;
-            }
-        });
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> patchProperty(@PathVariable int id, @RequestBody PropertyModel property) {
+        return propertyService.modify(id, property);
     }
 }
