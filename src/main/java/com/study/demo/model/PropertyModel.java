@@ -4,7 +4,7 @@ public class PropertyModel {
     private int ID;
     private String owner;
     private String address;
-    private int rooms;
+    private Integer rooms;
 
     public PropertyModel(int ID, String owner, String address, int rooms) {
         this.ID = ID;
@@ -29,7 +29,7 @@ public class PropertyModel {
         this.address = address;
     }
 
-    public int getRooms() {
+    public Integer getRooms() {
         return rooms;
     }
 
