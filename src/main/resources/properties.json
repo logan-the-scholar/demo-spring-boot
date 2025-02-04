@@ -1,0 +1,36 @@
+[ {
+  "owner" : "Juan Pérez",
+  "address" : "Calle Falsa 123, Ciudad A",
+  "rooms" : 3,
+  "bathrooms" : 2,
+  "was_deleted" : false,
+  "id" : "1a2b3c"
+}, {
+  "owner" : "María López",
+  "address" : "Avenida Siempre Viva 742, Ciudad B",
+  "rooms" : 2,
+  "bathrooms" : 1,
+  "was_deleted" : false,
+  "id" : "4d5e6f"
+}, {
+  "owner" : "Carlos García",
+  "address" : "Boulevard Principal 456, Ciudad C",
+  "rooms" : 4,
+  "bathrooms" : 3,
+  "was_deleted" : false,
+  "id" : "7g8h9i"
+}, {
+  "owner" : "Ana Torres",
+  "address" : "Plaza Central 987, Ciudad D",
+  "rooms" : 1,
+  "bathrooms" : 1,
+  "was_deleted" : false,
+  "id" : "0j1k2l"
+}, {
+  "owner" : "Pedro Ramírez",
+  "address" : "Carretera Norte Km 15, Ciudad E",
+  "rooms" : 5,
+  "bathrooms" : 4,
+  "was_deleted" : false,
+  "id" : "3m4n5o"
+} ]

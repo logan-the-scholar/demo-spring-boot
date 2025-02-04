@@ -1,19 +1,19 @@
 package com.study.demo.modules.property;
 
 import com.study.demo.model.PropertyModel;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 
 @RestController()
 @RequestMapping("property")
 public class PropertyController {
-    PropertyServiceImpl propertyService = new PropertyServiceImpl();
-
+    @Autowired
+    private PropertyService propertyService;
+    
     @GetMapping
     public ResponseEntity<List<PropertyModel>> getAll() {
         return ResponseEntity.ok(propertyService.getAll());
@@ -31,17 +31,17 @@ public class PropertyController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> putProperty(@PathVariable int id, @RequestBody PropertyModel property) {
+    public ResponseEntity<?> putProperty(@PathVariable String id, @RequestBody PropertyModel property) {
         return propertyService.modifyAll(id, property);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteProperty(@PathVariable int id) {
+    public ResponseEntity<?> deleteProperty(@PathVariable String id) {
         return propertyService.delete(id);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<?> patchProperty(@PathVariable int id, @RequestBody PropertyModel property) {
+    public ResponseEntity<?> patchProperty(@PathVariable String id, @RequestBody PropertyModel property) {
         return propertyService.modify(id, property);
     }
 }
