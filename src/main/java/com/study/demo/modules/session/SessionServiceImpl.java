@@ -1,8 +1,8 @@
-package com.study.demo.modules.property;
+package com.study.demo.modules.session;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.study.demo.model.PropertyModel;
+import com.study.demo.model.SessionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -13,21 +13,20 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.MissingResourceException;
 import java.util.Optional;
 
-@Service
-public class PropertyServiceImpl implements PropertyService {
+@Service("propertyJson")
+public class SessionServiceImpl implements SessionService {
 
-    public List<PropertyModel> getAll() {
-        List<PropertyModel> properties;
+    public List<SessionModel> getAll() {
+        List<SessionModel> properties;
 
         try {
             properties = new ObjectMapper().readValue(
                     //this.getClass().getClassLoader().getResourceAsStream("/properties.json"),
                     //new File(String.valueOf(this.getClass().getResource("properties.json"))),
                     new File("src/main/resources/properties.json"),
-                    new TypeReference<List<PropertyModel>>() {
+                    new TypeReference<List<SessionModel>>() {
                     });
 
             return properties;
@@ -36,7 +35,7 @@ public class PropertyServiceImpl implements PropertyService {
         }
     }
 
-    public void writeAll(List<PropertyModel> properties) {
+    public void writeAll(List<SessionModel> properties) {
         ObjectMapper om = new ObjectMapper();
 
         try {
@@ -52,7 +51,7 @@ public class PropertyServiceImpl implements PropertyService {
     }
 
     public ResponseEntity<?> getByOwner(String owner) {
-        Optional<PropertyModel> optional = this.getAll().stream().filter(p -> p.getOwner().equalsIgnoreCase(owner))
+        Optional<SessionModel> optional = this.getAll().stream().filter(p -> p.getOwner().equalsIgnoreCase(owner))
                 .reduce((p, c) -> p).stream().findFirst();
 
         if (optional.isPresent()) {
@@ -62,8 +61,8 @@ public class PropertyServiceImpl implements PropertyService {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Property not found");
     }
 
-    public PropertyModel getById(String id) {
-        Optional<PropertyModel> optional = this.getAll().stream().filter(p -> p.getID().equalsIgnoreCase(id))
+    public SessionModel getById(String id) {
+        Optional<SessionModel> optional = this.getAll().stream().filter(p -> p.getID().equalsIgnoreCase(id))
                 .reduce((p, c) -> p).stream().findFirst();
 
         if (optional.isPresent()) {
@@ -73,8 +72,8 @@ public class PropertyServiceImpl implements PropertyService {
         throw new RuntimeException("Property not found");
     }
 
-    public URI create(PropertyModel property) {
-        List<PropertyModel> properties;
+    public URI create(SessionModel property) {
+        List<SessionModel> properties;
         ObjectMapper om = new ObjectMapper();
 
         properties = this.getAll();
@@ -86,12 +85,12 @@ public class PropertyServiceImpl implements PropertyService {
                 .toUri();
     }
 
-    public ResponseEntity<?> modifyAll(String id, PropertyModel property) {
-        List<PropertyModel> properties = this.getAll();
+    public ResponseEntity<?> modifyAll(String id, SessionModel property) {
+        List<SessionModel> properties = this.getAll();
 
-        PropertyModel modified = properties.stream()
+        SessionModel modified = properties.stream()
                 .filter(p -> p.getID().equalsIgnoreCase(id))
-                .findFirst().<PropertyModel>map(p -> {
+                .findFirst().<SessionModel>map(p -> {
                     p.setAddress(property.getAddress());
                     p.setOwner(property.getOwner());
                     p.setRooms(property.getRooms());
@@ -113,7 +112,7 @@ public class PropertyServiceImpl implements PropertyService {
     }
 
     public ResponseEntity<?> delete(String id) {
-        List<PropertyModel> properties = this.getAll();
+        List<SessionModel> properties = this.getAll();
 
         return (new ArrayList<>(properties)).stream()
                 .filter(p -> p.getID().equalsIgnoreCase(id))
@@ -126,8 +125,8 @@ public class PropertyServiceImpl implements PropertyService {
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Property not found"));
     }
 
-    public ResponseEntity<?> modify(String id, PropertyModel property) {
-        List<PropertyModel> properties = this.getAll();
+    public ResponseEntity<?> modify(String id, SessionModel property) {
+        List<SessionModel> properties = this.getAll();
 
         return properties.stream().filter(p -> p.getID().equalsIgnoreCase(id))
                 .findFirst()

@@ -1,18 +1,25 @@
 package com.study.demo.model;
 
-public class PropertyModel {
+import jakarta.persistence.*;
+
+@Entity(name = "sessions")
+public class SessionModel {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private String ID;
+//TODO cambiar todo esto a propiedades justas de una sesion
     private String owner;
     private String address;
     private Integer rooms;
     private Integer bathrooms;
     private Boolean was_deleted;
 
-    public PropertyModel() {
+    public SessionModel() {
 
     }
 
-    public PropertyModel(String ID, String owner, String address, int rooms, int bathrooms) {
+    public SessionModel(String ID, String owner, String address, int rooms, int bathrooms) {
         this.ID = ID;
         this.owner = owner;
         this.address = address;
