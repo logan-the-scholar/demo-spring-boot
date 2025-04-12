@@ -2,7 +2,9 @@ package com.study.demo.modules.session;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.study.demo.model.SessionModel;
+import com.study.demo.modules.session.model.DemoSession;
+import com.study.demo.modules.session.model.SessionModel;
+import com.study.demo.config.CodeRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -85,21 +87,28 @@ public class SessionServiceImpl implements SessionService {
                 .toUri();
     }
 
-    public ResponseEntity<?> modifyAll(String id, SessionModel property) {
-        List<SessionModel> properties = this.getAll();
+    public ResponseEntity<?> codeDemo(DemoSession scriptDemo) {
+        try {
+            String result = CodeRunner.execute(scriptDemo.getCode(), scriptDemo.getLanguage());
 
-        SessionModel modified = properties.stream()
-                .filter(p -> p.getID().equalsIgnoreCase(id))
-                .findFirst().<SessionModel>map(p -> {
-                    p.setAddress(property.getAddress());
-                    p.setOwner(property.getOwner());
-                    p.setRooms(property.getRooms());
-                    return p;
-                }).orElseThrow(() -> new RuntimeException("Property not found"));
+            return ResponseEntity.ok(result);
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
 
-        this.writeAll(properties);
+//        List<SessionModel> properties = this.getAll();
+//
+//        SessionModel modified = properties.stream()
+//                .filter(p -> p.getID().equalsIgnoreCase("id"))
+//                .findFirst().<SessionModel>map(p -> {
+//                    p.setAddress(property.getAddress());
+//                    p.setOwner(property.getOwner());
+//                    p.setRooms(property.getRooms());
+//                    return p;
+//                }).orElseThrow(() -> new RuntimeException("Property not found"));
+//
+//        this.writeAll(properties);
 
-        return ResponseEntity.ok(modified);
 //        return properties.stream()
 //                .filter(p -> p.getID().equalsIgnoreCase(id))
 //                .findFirst()
@@ -125,25 +134,25 @@ public class SessionServiceImpl implements SessionService {
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Property not found"));
     }
 
-    public ResponseEntity<?> modify(String id, SessionModel property) {
-        List<SessionModel> properties = this.getAll();
-
-        return properties.stream().filter(p -> p.getID().equalsIgnoreCase(id))
-                .findFirst()
-                .<ResponseEntity<?>>map(p -> {
-                    if (property.getOwner() != null) {
-                        p.setOwner(property.getOwner());
-                    }
-                    if (property.getRooms() != null) {
-                        p.setRooms(property.getRooms());
-                    }
-                    if (property.getAddress() != null) {
-                        p.setAddress(property.getAddress());
-                    }
-
-
-                    return ResponseEntity.ok(p);
-                })
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Property not found"));
-    }
+//    public ResponseEntity<?> modify(String id, SessionModel property) {
+//        List<SessionModel> properties = this.getAll();
+//
+//        return properties.stream().filter(p -> p.getID().equalsIgnoreCase(id))
+//                .findFirst()
+//                .<ResponseEntity<?>>map(p -> {
+//                    if (property.getOwner() != null) {
+//                        p.setOwner(property.getOwner());
+//                    }
+//                    if (property.getRooms() != null) {
+//                        p.setRooms(property.getRooms());
+//                    }
+//                    if (property.getAddress() != null) {
+//                        p.setAddress(property.getAddress());
+//                    }
+//
+//
+//                    return ResponseEntity.ok(p);
+//                })
+//                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Property not found"));
+//    }
 }

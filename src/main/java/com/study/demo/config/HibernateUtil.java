@@ -1,4 +1,4 @@
-package com.study.demo.util;
+package com.study.demo.config;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;

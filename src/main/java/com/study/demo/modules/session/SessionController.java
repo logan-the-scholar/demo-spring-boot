@@ -1,6 +1,7 @@
 package com.study.demo.modules.session;
 
-import com.study.demo.model.SessionModel;
+import com.study.demo.modules.session.model.DemoSession;
+import com.study.demo.modules.session.model.SessionModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
@@ -33,9 +34,9 @@ public class SessionController {
         return ResponseEntity.created(location).build();
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> putProperty(@PathVariable String id, @RequestBody SessionModel property) {
-        return sessionService.modifyAll(id, property);
+    @PostMapping("/code-demo")
+    public ResponseEntity<?> codeDemo(@RequestBody DemoSession scriptDemo) {
+        return sessionService.codeDemo(scriptDemo);
     }
 
     @DeleteMapping("/{id}")
@@ -45,6 +46,6 @@ public class SessionController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<?> patchProperty(@PathVariable String id, @RequestBody SessionModel property) {
-        return sessionService.modify(id, property);
+        return ResponseEntity.ok("not_ok");//sessionService.modify(id, property);
     }
 }

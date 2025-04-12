@@ -1,4 +1,4 @@
-package com.study.demo.util;
+package com.study.demo.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;

@@ -28,6 +28,7 @@
 	</scm>
 	<properties>
 		<java.version>21</java.version>
+		<org.mapstruct.version>1.6.3</org.mapstruct.version>
 	</properties>
 	<dependencies>
 
@@ -59,25 +60,35 @@
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
-<!--
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mapstruct</groupId>
+			<artifactId>mapstruct</artifactId>
+			<version>${org.mapstruct.version}</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
--->
-<!--
-		<dependency>
+		<!--dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 			<version>3.4.2</version>
+		</dependency-->
+
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-jpa</artifactId>
+			<version>3.4.2</version>
 		</dependency>
--->
-<dependency>
-    <groupId>org.springframework.data</groupId>
-    <artifactId>spring-data-jpa</artifactId>
-    <version>3.4.2</version>
-</dependency>
+
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
@@ -92,7 +103,6 @@
 			<version>6.2.1.Final</version>
 		</dependency>
 
-
 		<!-- https://mvnrepository.com/artifact/org.hibernate.search/hibernate-search-mapper-orm -->
 		<dependency>
 			<groupId>org.hibernate.search</groupId>
@@ -100,36 +110,57 @@
 			<version>6.2.1.Final</version>
 		</dependency>
 
-
-			<!--
-		<dependency>
-			<groupId>org.hibernate.search</groupId>
-			<artifactId>hibernate-search-backend-lucene</artifactId>
-			<version>6.2.0.Final</version>
-		</dependency>
-			O backend-elasticsearch -->
-
 		<dependency>
 			<groupId>jakarta.persistence</groupId>
 			<artifactId>jakarta.persistence-api</artifactId>
 			<version>3.1.0</version>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api -->
+		<dependency>
+			<groupId>jakarta.validation</groupId>
+			<artifactId>jakarta.validation-api</artifactId>
+			<version>3.1.0</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.amazonaws/aws-lambda-java-core -->
+		<!-- dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-lambda-java-core</artifactId>
+			<version>1.2.1</version>
+		</dependency -->
+
+		<!-- https://mvnrepository.com/artifact/com.amazonaws/aws-lambda-java-log4j2 -->
+		<!-- dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-lambda-java-log4j2</artifactId>
+			<version>1.5.0</version>
+		</dependency -->
+
 	</dependencies>
 
 	<build>
 		<plugins>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.1</version>
 				<configuration>
 					<annotationProcessorPaths>
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
 						</path>
+						<path>
+							<groupId>org.mapstruct</groupId>
+							<artifactId>mapstruct-processor</artifactId>
+							<version>${org.mapstruct.version}</version>
+						</path>
 					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
+
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
@@ -142,10 +173,10 @@
 					</excludes>
 				</configuration>
 			</plugin>
+
 		</plugins>
 	</build>
-	<!--
-	<beans xmlns="http://www.springframework.org/schema/beans"
+	<!--beans xmlns="http://www.springframework.org/schema/beans"
 		   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		   xmlns:jpa="http://www.springframework.org/schema/data/jpa"
 		   xsi:schemaLocation="http://www.springframework.org/schema/beans
@@ -155,7 +186,6 @@
 
 		<jpa:repositories base-package="com.study.demo.repositories" />
 
-	</beans>
-	-->
+	</beans-->
 </project>
 

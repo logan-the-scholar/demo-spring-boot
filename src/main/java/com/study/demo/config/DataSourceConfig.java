@@ -1,4 +1,4 @@
-package com.study.demo.util;
+package com.study.demo.config;
 
 import com.zaxxer.hikari.HikariDataSource;
 import jakarta.persistence.EntityManagerFactory;
@@ -38,11 +38,10 @@ public class DataSourceConfig {
     }
 
     @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory(
-            DataSource dataSource, JpaVendorAdapter jpaVendorAdapter) {
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource,
+                                                                       JpaVendorAdapter jpaVendorAdapter) {
 
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-
         em.setDataSource(dataSource);
         em.setPackagesToScan("com.study.demo.modules.user");
         em.setJpaVendorAdapter(jpaVendorAdapter);
