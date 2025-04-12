@@ -1,6 +1,8 @@
-package com.study.demo.modules.user;
+package com.study.demo.modules.user.model;
 
+import com.study.demo.modules.user.dto.UserType;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 
 import java.util.UUID;
 
@@ -11,11 +13,12 @@ public class UserModel {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-//http://localhost:8080/demo/api/v0/user/register/by-owner/98b8ed08-cfc4-4c30-9d9c-45017a4bf503
     private String name;
     private String email;
     private String password;
-    private String profile_image;
+    private String profileImage;
+    @NotBlank(message = "Fatal error, user type cant be nullish")
+    private UserType userType;
     private String sub;
 
     public UserModel() {
@@ -45,12 +48,12 @@ public class UserModel {
         this.email = email;
     }
 
-    public String getProfile_image() {
-        return profile_image;
+    public String getProfileImage() {
+        return profileImage;
     }
 
-    public void setProfile_image(String profile_image) {
-        this.profile_image = profile_image;
+    public void setProfileImage(String profile_image) {
+        this.profileImage = profile_image;
     }
 
     public String getSub() {
@@ -67,5 +70,13 @@ public class UserModel {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public UserType getUserType() {
+        return userType;
+    }
+
+    public void setUserType(UserType userType) {
+        this.userType = userType;
     }
 }

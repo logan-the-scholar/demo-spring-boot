@@ -1,6 +1,7 @@
 package com.study.demo.modules.session;
 
-import com.study.demo.model.SessionModel;
+import com.study.demo.modules.session.model.DemoSession;
+import com.study.demo.modules.session.model.SessionModel;
 import org.springframework.http.ResponseEntity;
 
 import java.net.URI;
@@ -11,8 +12,7 @@ public interface SessionService {
     List<SessionModel> getAll();
     ResponseEntity<?> getByOwner(String owner);
     URI create(SessionModel property);
-    ResponseEntity<?> modifyAll(String id, SessionModel property);
+    ResponseEntity<?> codeDemo(DemoSession scriptDemo);
     ResponseEntity<?> delete(String id);
-    ResponseEntity<?> modify(String id, SessionModel property);
-
+    //ResponseEntity<?> modify(String id, SessionModel property);
 }

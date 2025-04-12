@@ -1,16 +1,16 @@
-package com.study.demo.model;
+package com.study.demo.modules.session.model;
 
 import jakarta.persistence.*;
 
 @Entity(name = "sessions")
-public class SessionModel {
+public class SessionModel implements Session {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String ID;
-//TODO cambiar todo esto a propiedades justas de una sesion
     private String owner;
-    private String address;
+    private String code;
+    private String language;
     private Integer rooms;
     private Integer bathrooms;
     private Boolean was_deleted;
@@ -19,10 +19,11 @@ public class SessionModel {
 
     }
 
-    public SessionModel(String ID, String owner, String address, int rooms, int bathrooms) {
+    public SessionModel(String ID, String owner, String code, String language, int rooms, int bathrooms) {
         this.ID = ID;
         this.owner = owner;
-        this.address = address;
+        this.code = code;
+        this.language = language;
         this.rooms = rooms;
         this.bathrooms = bathrooms;
         this.was_deleted = false;
@@ -56,12 +57,22 @@ public class SessionModel {
         this.owner = owner;
     }
 
-    public String getAddress() {
-        return address;
+    public String getCode() {
+        return code;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setCode(String address) {
+        this.code = address;
+    }
+
+    @Override
+    public String getLanguage() {
+        return this.language;
+    }
+
+    @Override
+    public void setLanguage(String language) {
+        this.language = language;
     }
 
     public Integer getRooms() {
