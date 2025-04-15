@@ -6,8 +6,6 @@ public class RegisterUserDto extends LoginUserDto {
     @NotBlank(message = "Name is required")
     private String name;
 
-    private String profileImage;
-
     @NotBlank(message = "Password confirmation is required")
     private String confirmPassword;
 
@@ -17,14 +15,6 @@ public class RegisterUserDto extends LoginUserDto {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getProfileImage() {
-        return profileImage;
-    }
-
-    public void setProfileImage(String profile_image) {
-        this.profileImage = profile_image;
     }
 
     public String getConfirmPassword() {
