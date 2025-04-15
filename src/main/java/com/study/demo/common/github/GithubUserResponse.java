@@ -2,7 +2,7 @@ package com.study.demo.common.github;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class UserDataResponse {
+public class GithubUserResponse {
     private String id;
 
     @JsonProperty("login")

@@ -1,8 +1,11 @@
 package com.study.demo.modules.user.service;
 
+import com.study.demo.common.exception.EmailAlreadyExistsException;
+import com.study.demo.common.exception.InvalidCredentialsException;
+import com.study.demo.common.exception.PasswordDontMatchException;
 import com.study.demo.common.github.GithubAuthService;
-import com.study.demo.common.github.UserDataResponse;
-import com.study.demo.modules.user.dto.GithubSignInResponseDto;
+import com.study.demo.common.github.GithubUserResponse;
+import com.study.demo.modules.user.dto.LoginUserDto;
 import com.study.demo.modules.user.dto.RegisterUserDto;
 import com.study.demo.modules.user.dto.UserRecurrence;
 import com.study.demo.modules.user.dto.UserType;
@@ -11,11 +14,8 @@ import com.study.demo.modules.user.model.UserModel;
 import com.study.demo.modules.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
 
 @Service
@@ -38,45 +38,69 @@ public class UserServiceImpl implements UserService {
 //        System.out.println("UserServiceImpl cargado con UserRepository: " + this.repository);
 //    }
 
-    public ResponseEntity<?> login(UserModel user) {
-        repository.findById(user.getId());
-        return null;
+    public UserLoginResponseMapper login(LoginUserDto user) {
+        List<UserModel> foundUser = repository.findByEmail(user.getEmail());
+
+        boolean flag = foundUser.getFirst().getEmail().equalsIgnoreCase(user.getEmail())
+                && foundUser.getFirst().getPassword().equalsIgnoreCase(user.getPassword());
+
+        if (foundUser.isEmpty() || !flag) {
+            throw new InvalidCredentialsException("Invalid Credentials");
+
+        }
+
+        return UserLoginResponseMapper.fromEntity(foundUser.getFirst(), UserRecurrence.WELCOME_BACK);
     }
 
     @Override
-    public URI register(RegisterUserDto user) {
-        //TODO cambiar esto, quitar el register del path /register/by-id
-        UserModel created_user = new UserModel();
+    public void register(RegisterUserDto user) {
+        if (!user.getPassword().equalsIgnoreCase(user.getConfirmPassword())) {
+            throw new PasswordDontMatchException("Passwords don't match!");
+        }
 
-        created_user.setName(user.getName());
-        created_user.setEmail(user.getEmail());
-        created_user.setPassword(user.getPassword());
-        created_user.setProfileImage(user.getProfileImage());
-        //UserModel created_user = (UserModel) repository.save(user);
-        return ServletUriComponentsBuilder.fromCurrentRequest().path("/by-id/{id}")
-                .buildAndExpand(created_user.getId())
-                .toUri();
+        if (repository.existsByEmail(user.getEmail())) {
+            throw new EmailAlreadyExistsException("This email is already on use");
+        }
+
+        UserModel createdUser = new UserModel();
+
+        createdUser.setName(user.getName());
+        createdUser.setEmail(user.getEmail());
+        createdUser.setPassword(user.getPassword());
+        createdUser.setUserType(UserType.LOCAL);
+
+        repository.save(createdUser);
+        //created_user.setProfileImage(user.getProfileImage());
+//        return ServletUriComponentsBuilder.fromCurrentRequest().path("/by-id/{id}")
+//                .buildAndExpand(created_user.getId())
+//                .toUri();
     }
 
     public UserLoginResponseMapper githubSignIn(String code) {
-        UserDataResponse userData = githubAuthService.getUserData(code);
+        GithubUserResponse githubUser = githubAuthService.getUserData(code);
+        List<UserModel> foundUser = repository.findBySub("github|" + githubUser.getId());
 
-        List<UserModel> foundUser = repository.findBySub("github|" + userData.getId());
         if (foundUser.isEmpty()) {
+            if (repository.existsByEmail(githubUser.getEmail())) {
+                throw new EmailAlreadyExistsException("This email is already on use");
+            }
+
             UserModel createdUser = new UserModel();
-            createdUser.setName(userData.getNickname());
-            createdUser.setEmail(userData.getEmail());
-            createdUser.setSub("github|" + userData.getId());
+            createdUser.setName(githubUser.getNickname());
+            createdUser.setEmail(githubUser.getEmail());
+            createdUser.setSub("github|" + githubUser.getId());
             createdUser.setUserType(UserType.GITHUB);
 
             repository.save(createdUser);
 
             return UserLoginResponseMapper.fromEntity(createdUser, UserRecurrence.FIRST_TIME);
-        } else if (foundUser.size() == 1 && userData.getEmail().equalsIgnoreCase(foundUser.getFirst().getEmail())) {
 
+        } else if (foundUser.size() == 1 && githubUser.getEmail().equalsIgnoreCase(foundUser.getFirst().getEmail())) {
             return UserLoginResponseMapper.fromEntity(foundUser.getFirst(), UserRecurrence.WELCOME_BACK);
+
         } else {
-            throw new RuntimeException("Something weird happened here");
+            throw new RuntimeException("Something weird happened here, dupped user or similar issue");
+
         }
     }
 }
