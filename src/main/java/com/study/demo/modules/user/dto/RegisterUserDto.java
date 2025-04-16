@@ -1,6 +1,7 @@
 package com.study.demo.modules.user.dto;
 
-import jakarta.validation.constraints.*;
+
+import jakarta.validation.constraints.NotBlank;
 
 public class RegisterUserDto extends LoginUserDto {
     @NotBlank(message = "Name is required")
@@ -9,19 +10,19 @@ public class RegisterUserDto extends LoginUserDto {
     @NotBlank(message = "Password confirmation is required")
     private String confirmPassword;
 
-    public String getName() {
+    public @NotBlank(message = "Name is required") String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(@NotBlank(message = "Name is required") String name) {
         this.name = name;
     }
 
-    public String getConfirmPassword() {
+    public @NotBlank(message = "Password confirmation is required") String getConfirmPassword() {
         return confirmPassword;
     }
 
-    public void setConfirmPassword(String confirmPassword) {
+    public void setConfirmPassword(@NotBlank(message = "Password confirmation is required") String confirmPassword) {
         this.confirmPassword = confirmPassword;
     }
 }

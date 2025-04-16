@@ -5,7 +5,9 @@ public enum UserType {
     LOCAL("local"),
     GOOGLE("google");
 
-    UserType(String type) {
+    public final String value;
 
+    UserType(String type) {
+        this.value = type;
     }
 }

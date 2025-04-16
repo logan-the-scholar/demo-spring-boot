@@ -1,6 +1,7 @@
 package com.study.demo.common.github;
 
 import com.study.demo.config.GithubAuthConfigProperties;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -9,22 +10,24 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Map;
 
-//@Service
 @Component("githubAuthService")
 @EnableConfigurationProperties(GithubAuthConfigProperties.class)
 public class GithubAuthService {
 
     private final WebClient webClient;
-    GithubAuthConfigProperties githubProperties;
+    private final GithubAuthConfigProperties githubProperties;
 
-    public GithubAuthService(WebClient webClient) {
+    public GithubAuthService(WebClient webClient, @Qualifier("githubAuthConfigProperties") GithubAuthConfigProperties githubProperties) {
         this.webClient = webClient;
+        this.githubProperties = githubProperties;
     }
 
     public String getAccessToken(String code) {
         AccessTokenResponse response = webClient.post().uri("/login/oauth/access_token")
                 .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
                 .bodyValue(Map.of(
+                        "client_id", githubProperties.getClientId(),
+                        "client_secret", githubProperties.getClientSecret(),
                         "code", code
                 )).retrieve()
                 .bodyToMono(AccessTokenResponse.class)
@@ -40,7 +43,7 @@ public class GithubAuthService {
         return response.getAccessToken();
     }
 
-    public UserDataResponse getUserData(String code) {
+    public GithubUserResponse getUserData(String code) {
         String token = getAccessToken(code);
         WebClient.ResponseSpec response = WebClient.create("https://api.github.com")
                 .get().uri("/user")
@@ -48,6 +51,6 @@ public class GithubAuthService {
                 .header(HttpHeaders.ACCEPT, "application/vnd.github+json")
                 .retrieve();
 
-        return response.bodyToMono(UserDataResponse.class).block();
+        return response.bodyToMono(GithubUserResponse.class).block();
     }
 }

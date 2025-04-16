@@ -12,6 +12,7 @@ import com.study.demo.modules.user.dto.UserType;
 import com.study.demo.modules.user.mapper.UserLoginResponseMapper;
 import com.study.demo.modules.user.model.UserModel;
 import com.study.demo.modules.user.repository.UserRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -33,11 +34,6 @@ public class UserServiceImpl implements UserService {
         this.githubAuthService = githubAuthService;
     }
 
-//    @PostConstruct
-//    public void init() {
-//        System.out.println("UserServiceImpl cargado con UserRepository: " + this.repository);
-//    }
-
     public UserLoginResponseMapper login(LoginUserDto user) {
         List<UserModel> foundUser = repository.findByEmail(user.getEmail());
 
@@ -48,8 +44,8 @@ public class UserServiceImpl implements UserService {
             throw new InvalidCredentialsException("Invalid Credentials");
 
         }
-
         return UserLoginResponseMapper.fromEntity(foundUser.getFirst(), UserRecurrence.WELCOME_BACK);
+
     }
 
     @Override
@@ -70,10 +66,7 @@ public class UserServiceImpl implements UserService {
         createdUser.setUserType(UserType.LOCAL);
 
         repository.save(createdUser);
-        //created_user.setProfileImage(user.getProfileImage());
-//        return ServletUriComponentsBuilder.fromCurrentRequest().path("/by-id/{id}")
-//                .buildAndExpand(created_user.getId())
-//                .toUri();
+
     }
 
     public UserLoginResponseMapper githubSignIn(String code) {
@@ -83,6 +76,7 @@ public class UserServiceImpl implements UserService {
         if (foundUser.isEmpty()) {
             if (repository.existsByEmail(githubUser.getEmail())) {
                 throw new EmailAlreadyExistsException("This email is already on use");
+
             }
 
             UserModel createdUser = new UserModel();

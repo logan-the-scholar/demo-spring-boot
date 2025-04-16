@@ -13,19 +13,19 @@ public class LoginUserDto {
     @NotBlank(message = "Password is required")
     private String password;
 
-    public String getEmail() {
+    public @Email(message = "Email must be valid") @NotBlank(message = "Email is required") String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
+    public void setEmail(@Email(message = "Email must be valid") @NotBlank(message = "Email is required") String email) {
         this.email = email;
     }
 
-    public String getPassword() {
+    public @Size(min = 8, message = "Password must be at least 8 characters long") @NotBlank(message = "Password is required") String getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
+    public void setPassword(@Size(min = 8, message = "Password must be at least 8 characters long") @NotBlank(message = "Password is required") String password) {
         this.password = password;
     }
 }

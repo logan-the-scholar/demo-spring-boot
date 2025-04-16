@@ -5,22 +5,31 @@ import com.study.demo.modules.user.dto.RegisterUserDto;
 import com.study.demo.modules.user.dto.UserRecurrence;
 import com.study.demo.modules.user.mapper.UserLoginResponseMapper;
 import com.study.demo.modules.user.service.UserService;
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Valid;
+import jakarta.validation.Validator;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.Set;
 
 @RestController()
 @RequestMapping("user")
 public class UserController {
 
+    @Autowired
     private final UserService userService;
 
-    @Autowired
-    public UserController(UserService userService){
+    @Qualifier("localValidatorFactoryBean")
+    private final Validator validator;
+
+    public UserController(UserService userService, Validator validator) {
         this.userService = userService;
+        this.validator = validator;
     }
 
     @PostMapping("login")
@@ -34,7 +43,7 @@ public class UserController {
 
         }
     }
-    
+
     @PostMapping("register")
     public ResponseEntity<?> register(@RequestBody @Valid RegisterUserDto user) {
 
@@ -42,19 +51,18 @@ public class UserController {
             userService.register(user);
             return ResponseEntity.status(201).body(Map.of("message", "User created successfully"));
 
-        } catch(Throwable error) {
+        } catch (Throwable error) {
             return ResponseEntity.status(400).body(error.getMessage());
 
         }
     }
 
     @PostMapping("github/sign-in")
-    public ResponseEntity<?> githubSignIn(@RequestHeader("X-Code") String code) {
+    public ResponseEntity<?> githubSignIn(@RequestHeader("X-Code") @NotBlank(message = "Github code is required as header") String code) {
         try {
             UserLoginResponseMapper githubUser = userService.githubSignIn(code);
-            return ResponseEntity.status(githubUser.recurrence() == UserRecurrence.FIRST_TIME ? 201 : 200).body(githubUser);
+            return ResponseEntity.status(githubUser.recurrence().equalsIgnoreCase(UserRecurrence.FIRST_TIME.value) ? 201 : 200).body(githubUser);
 
-            //URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/by-id/{id}").buildAndExpand(response).toUri();
         } catch (Throwable error) {
             return ResponseEntity.status(500).body(error.getMessage());
 
