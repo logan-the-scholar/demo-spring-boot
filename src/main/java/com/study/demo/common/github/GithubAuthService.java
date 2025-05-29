@@ -51,6 +51,9 @@ public class GithubAuthService {
                 .header(HttpHeaders.ACCEPT, "application/vnd.github+json")
                 .retrieve();
 
-        return response.bodyToMono(GithubUserResponse.class).block();
+        GithubUserResponse githubUser = response.bodyToMono(GithubUserResponse.class).block();
+        System.out.println(githubUser);
+
+        return githubUser;
     }
 }

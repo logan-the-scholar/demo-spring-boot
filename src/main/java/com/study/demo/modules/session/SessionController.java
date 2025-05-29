@@ -15,7 +15,7 @@ import java.util.List;
 public class SessionController {
 
     @Autowired
-    @Qualifier("propertyJson")
+    //@Qualifier("propertyJson")
     private SessionService sessionService;
     
     @GetMapping

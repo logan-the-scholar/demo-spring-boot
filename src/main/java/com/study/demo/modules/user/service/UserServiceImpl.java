@@ -12,12 +12,18 @@ import com.study.demo.modules.user.dto.UserType;
 import com.study.demo.modules.user.mapper.UserLoginResponseMapper;
 import com.study.demo.modules.user.model.UserModel;
 import com.study.demo.modules.user.repository.UserRepository;
-import jakarta.validation.Valid;
+import com.study.demo.modules.workspace.model.WorkspaceModel;
+import com.study.demo.modules.workspace.service.WorkspaceService;
+import com.study.demo.modules.workspace.service.WorkspaceServiceImpl;
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -29,9 +35,23 @@ public class UserServiceImpl implements UserService {
     @Qualifier("githubAuthService")
     private final GithubAuthService githubAuthService;
 
+    //    @Autowired
+//    @Qualifier("workspaceService")
+    private WorkspaceService workspaceService;
+
     public UserServiceImpl(UserRepository repository, GithubAuthService githubAuthService) {
         this.repository = repository;
         this.githubAuthService = githubAuthService;
+        //this.workspaceService = workspaceService;
+    }
+
+    @Autowired
+    public void setWorkspaceService(@Lazy WorkspaceService workspaceService) {
+        this.workspaceService = workspaceService;
+    }
+
+    public WorkspaceService getWorkspaceService() {
+        return workspaceService;
     }
 
     public UserLoginResponseMapper login(LoginUserDto user) {
@@ -48,7 +68,6 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    @Override
     public void register(RegisterUserDto user) {
         if (!user.getPassword().equalsIgnoreCase(user.getConfirmPassword())) {
             throw new PasswordDontMatchException("Passwords don't match!");
@@ -64,9 +83,15 @@ public class UserServiceImpl implements UserService {
         createdUser.setEmail(user.getEmail());
         createdUser.setPassword(user.getPassword());
         createdUser.setUserType(UserType.LOCAL);
+        UserModel user_ = repository.save(createdUser);
 
-        repository.save(createdUser);
-
+        //Optional<UserModel> user_ = repository.findById(createdUser.getId());
+        //if(user_.isPresent()) {
+        workspaceService.createWorkspace(user_.getName(), user_);
+        //} else {
+        //    throw new RuntimeException("Failed to create user");
+        //}
+        //createdUser.getWorkspaces().add(defaultWorkspace);
     }
 
     public UserLoginResponseMapper githubSignIn(String code) {
@@ -80,12 +105,15 @@ public class UserServiceImpl implements UserService {
             }
 
             UserModel createdUser = new UserModel();
+
             createdUser.setName(githubUser.getNickname());
             createdUser.setEmail(githubUser.getEmail());
             createdUser.setSub("github|" + githubUser.getId());
             createdUser.setUserType(UserType.GITHUB);
+            createdUser.setProfileImage(githubUser.getProfileImage());
+            UserModel user_ = repository.save(createdUser);
 
-            repository.save(createdUser);
+            workspaceService.createWorkspace(user_.getName(), user_);
 
             return UserLoginResponseMapper.fromEntity(createdUser, UserRecurrence.FIRST_TIME);
 
@@ -94,6 +122,18 @@ public class UserServiceImpl implements UserService {
 
         } else {
             throw new RuntimeException("Something weird happened here, dupped user or similar issue");
+
+        }
+    }
+
+    public UserModel getUserById(UUID uuid) throws BadRequestException {
+        Optional<UserModel> user = repository.findById(uuid);
+
+        if (user.isPresent()) {
+            return user.get();
+
+        } else {
+            throw new BadRequestException("User not found");
 
         }
     }

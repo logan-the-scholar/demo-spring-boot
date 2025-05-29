@@ -1,9 +1,11 @@
 package com.study.demo.modules.user.model;
 
+import com.study.demo.modules.workspace.model.WorkspaceModel;
 import com.study.demo.modules.user.dto.UserType;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -19,10 +21,13 @@ public class UserModel {
     private String email;
     private String password;
     private String profileImage;
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserType userType;
     @Column(unique = true)
     private String sub;
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<WorkspaceModel> workspaces = new ArrayList<>();
 
     public UserModel() {
     }
@@ -81,5 +86,13 @@ public class UserModel {
 
     public void setUserType(UserType userType) {
         this.userType = userType;
+    }
+
+    public List<WorkspaceModel> getWorkspaces() {
+        return workspaces;
+    }
+
+    public void setWorkspaces(List<WorkspaceModel> workspaces) {
+        this.workspaces = workspaces;
     }
 }

@@ -5,7 +5,6 @@ import com.study.demo.modules.user.dto.RegisterUserDto;
 import com.study.demo.modules.user.dto.UserRecurrence;
 import com.study.demo.modules.user.mapper.UserLoginResponseMapper;
 import com.study.demo.modules.user.service.UserService;
-import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import jakarta.validation.constraints.NotBlank;
@@ -15,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
-import java.util.Set;
 
 @RestController()
 @RequestMapping("user")
@@ -46,7 +44,6 @@ public class UserController {
 
     @PostMapping("register")
     public ResponseEntity<?> register(@RequestBody @Valid RegisterUserDto user) {
-
         try {
             userService.register(user);
             return ResponseEntity.status(201).body(Map.of("message", "User created successfully"));
@@ -58,10 +55,11 @@ public class UserController {
     }
 
     @PostMapping("github/sign-in")
-    public ResponseEntity<?> githubSignIn(@RequestHeader("X-Code") @NotBlank(message = "Github code is required as header") String code) {
+    public ResponseEntity<?> githubSignIn(@RequestHeader("X-Code") @NotBlank(message = "Github code is required as header") @Valid String code) {
         try {
             UserLoginResponseMapper githubUser = userService.githubSignIn(code);
             return ResponseEntity.status(githubUser.recurrence().equalsIgnoreCase(UserRecurrence.FIRST_TIME.value) ? 201 : 200).body(githubUser);
+            //TODO testear de nuevo el guardado de imagen de github y agregar el gravatar
 
         } catch (Throwable error) {
             return ResponseEntity.status(500).body(error.getMessage());
