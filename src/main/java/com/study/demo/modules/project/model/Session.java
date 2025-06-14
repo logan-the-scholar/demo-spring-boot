@@ -1,5 +1,6 @@
-package com.study.demo.modules.session.model;
+package com.study.demo.modules.project.model;
 
+@Deprecated
 public interface Session {
     public String getCode();
     public void setCode(String code);

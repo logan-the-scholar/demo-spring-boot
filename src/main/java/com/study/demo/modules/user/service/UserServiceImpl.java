@@ -5,16 +5,14 @@ import com.study.demo.common.exception.InvalidCredentialsException;
 import com.study.demo.common.exception.PasswordDontMatchException;
 import com.study.demo.common.github.GithubAuthService;
 import com.study.demo.common.github.GithubUserResponse;
-import com.study.demo.modules.user.dto.LoginUserDto;
-import com.study.demo.modules.user.dto.RegisterUserDto;
-import com.study.demo.modules.user.dto.UserRecurrence;
-import com.study.demo.modules.user.dto.UserType;
+import com.study.demo.modules.user.model.LoginUserDto;
+import com.study.demo.modules.user.model.RegisterUserDto;
+import com.study.demo.modules.user.model.UserRecurrence;
+import com.study.demo.modules.user.model.UserType;
 import com.study.demo.modules.user.mapper.UserLoginResponseMapper;
 import com.study.demo.modules.user.model.UserModel;
 import com.study.demo.modules.user.repository.UserRepository;
-import com.study.demo.modules.workspace.model.WorkspaceModel;
 import com.study.demo.modules.workspace.service.WorkspaceService;
-import com.study.demo.modules.workspace.service.WorkspaceServiceImpl;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -35,14 +33,11 @@ public class UserServiceImpl implements UserService {
     @Qualifier("githubAuthService")
     private final GithubAuthService githubAuthService;
 
-    //    @Autowired
-//    @Qualifier("workspaceService")
     private WorkspaceService workspaceService;
 
     public UserServiceImpl(UserRepository repository, GithubAuthService githubAuthService) {
         this.repository = repository;
         this.githubAuthService = githubAuthService;
-        //this.workspaceService = workspaceService;
     }
 
     @Autowired
@@ -85,13 +80,8 @@ public class UserServiceImpl implements UserService {
         createdUser.setUserType(UserType.LOCAL);
         UserModel user_ = repository.save(createdUser);
 
-        //Optional<UserModel> user_ = repository.findById(createdUser.getId());
-        //if(user_.isPresent()) {
-        workspaceService.createWorkspace(user_.getName(), user_);
-        //} else {
-        //    throw new RuntimeException("Failed to create user");
-        //}
-        //createdUser.getWorkspaces().add(defaultWorkspace);
+        workspaceService.createDefaultWorkspace(user_.getName(), user_);
+
     }
 
     public UserLoginResponseMapper githubSignIn(String code) {
@@ -111,9 +101,9 @@ public class UserServiceImpl implements UserService {
             createdUser.setSub("github|" + githubUser.getId());
             createdUser.setUserType(UserType.GITHUB);
             createdUser.setProfileImage(githubUser.getProfileImage());
-            UserModel user_ = repository.save(createdUser);
+            UserModel savedUser = repository.save(createdUser);
 
-            workspaceService.createWorkspace(user_.getName(), user_);
+            workspaceService.createDefaultWorkspace(savedUser.getName(), savedUser);
 
             return UserLoginResponseMapper.fromEntity(createdUser, UserRecurrence.FIRST_TIME);
 

@@ -1,7 +1,6 @@
 package com.study.demo.modules.user.model;
 
 import com.study.demo.modules.workspace.model.WorkspaceModel;
-import com.study.demo.modules.user.dto.UserType;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;

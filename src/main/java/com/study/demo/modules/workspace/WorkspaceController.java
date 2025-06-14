@@ -1,8 +1,9 @@
 package com.study.demo.modules.workspace;
 
+import com.study.demo.modules.project.model.ProjectCreationDto;
 import com.study.demo.modules.workspace.mapper.WorkspaceResponseMapper;
-import com.study.demo.modules.workspace.model.WorkspaceModel;
 import com.study.demo.modules.workspace.service.WorkspaceService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,4 +35,10 @@ public class WorkspaceController {
 
         }
     }
+
+    @PostMapping()
+    public ResponseEntity<?> createWorkspace(@PathVariable String id, @RequestBody String nose) {
+        return ResponseEntity.status(200).body("not implemented yet");
+    }
+
 }

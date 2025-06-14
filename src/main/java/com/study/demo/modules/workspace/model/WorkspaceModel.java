@@ -1,8 +1,11 @@
 package com.study.demo.modules.workspace.model;
 
+import com.study.demo.modules.project.model.ProjectModel;
 import com.study.demo.modules.user.model.UserModel;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -16,12 +19,12 @@ public class WorkspaceModel {
     @Column(nullable = false)
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = false)
     private UserModel owner;
 
-    //@OneToMany(mappedBy = "workspace", cascade = CascadeType.ALL, orphanRemoval = true)
-    //private String projects;
+    @OneToMany(mappedBy = "workspace", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProjectModel> projects = new ArrayList<>();
 
     public WorkspaceModel() {
     }
@@ -48,6 +51,14 @@ public class WorkspaceModel {
 
     public void setOwner(UserModel owner) {
         this.owner = owner;
+    }
+
+    public List<ProjectModel> getProjects() {
+        return projects;
+    }
+
+    public void setProjects(List<ProjectModel> projects) {
+        this.projects = projects;
     }
 
 //    public String getProjects() {

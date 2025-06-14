@@ -1,4 +1,4 @@
-package com.study.demo.modules.user.dto;
+package com.study.demo.modules.user.model;
 
 
 import jakarta.validation.constraints.NotBlank;

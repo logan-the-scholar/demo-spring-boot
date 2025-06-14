@@ -3,30 +3,28 @@ package com.study.demo.modules.workspace.service;
 import com.study.demo.modules.user.model.UserModel;
 import com.study.demo.modules.user.service.UserService;
 import com.study.demo.modules.workspace.mapper.WorkspaceResponseMapper;
+import com.study.demo.modules.workspace.model.WorkspaceCreationDto;
 import com.study.demo.modules.workspace.model.WorkspaceModel;
 import com.study.demo.modules.workspace.repository.WorkspaceRepository;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
-//@Component("workspaceService")
 public class WorkspaceServiceImpl implements WorkspaceService {
 
     @Autowired
     private final WorkspaceRepository repository;
 
-    //@Autowired
     private UserService userService;
 
     public WorkspaceServiceImpl(WorkspaceRepository repository) {
         this.repository = repository;
-        //this.userService = userService;
     }
 
     @Autowired
@@ -38,25 +36,23 @@ public class WorkspaceServiceImpl implements WorkspaceService {
         return userService;
     }
 
-    public WorkspaceModel createWorkspace(String name, UserModel owner) {
+    public void createDefaultWorkspace(String name, UserModel owner) {
         WorkspaceModel createdWorkspace = new WorkspaceModel();
         createdWorkspace.setOwner(owner);
         createdWorkspace.setName(name);
-        return this.repository.save(createdWorkspace);
+        this.repository.save(createdWorkspace);
     }
 
     public List<WorkspaceResponseMapper> getWorkspaces(UUID uuid) {
         try {
             UserModel owner = userService.getUserById(uuid);
-            System.out.println(owner.getEmail());
             List<WorkspaceModel> workspaces = repository.findByOwner(owner);
-            System.out.println(workspaces.getFirst().getName());
 
             if (workspaces.isEmpty()) {
                 throw new RuntimeException("No workspaces found");
 
             } else {
-                return workspaces.stream().map(WorkspaceResponseMapper::fromEntity).toList();//WorkspaceResponseMapper.fromEntity(workspaces);
+                return workspaces.stream().map(WorkspaceResponseMapper::fromEntity).toList();
 
             }
 
@@ -65,4 +61,31 @@ public class WorkspaceServiceImpl implements WorkspaceService {
 
         }
     }
+
+    public void createWorkspace(WorkspaceCreationDto workspace) {
+        try {
+            WorkspaceModel createdWorkspace = new WorkspaceModel();
+            createdWorkspace.setOwner(userService.getUserById(workspace.getOwner()));
+            createdWorkspace.setName(workspace.getName());
+            this.repository.save(createdWorkspace);
+            //"http://localhost:8080/demo/api/v0/workspace/{id}"
+            //return URI();
+
+        } catch (BadRequestException e) {
+            throw new RuntimeException(e);
+
+        }
+    }
+
+    public WorkspaceModel getWorkspaceById(UUID id) throws BadRequestException {
+        Optional<WorkspaceModel> workspace = repository.findById(id);
+
+        if (workspace.isPresent()) {
+            return workspace.get();
+        } else {
+            throw new BadRequestException("User not found");
+
+        }
+    }
+
 }

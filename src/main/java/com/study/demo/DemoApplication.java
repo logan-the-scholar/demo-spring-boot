@@ -11,7 +11,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @EntityScan(basePackages = {
 		"com.study.demo.modules.user",
-		"com.study.demo.modules.workspace"
+		"com.study.demo.modules.workspace",
+        "com.study.demo.modules.project",
+        "com.study.demo.modules.file"
 })
 //@EnableJpaRepositories(basePackages = {
 //		"com.study.demo.modules.user.repository",
@@ -19,7 +21,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 //})
 //@EntityScan(basePackages = "com.study.demo.modules")
 @EnableJpaRepositories(basePackages = "com.study.demo.modules")
-
 @SpringBootApplication
 public class DemoApplication {
 
