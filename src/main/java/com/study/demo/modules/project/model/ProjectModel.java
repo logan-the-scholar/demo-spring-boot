@@ -22,7 +22,7 @@ public class ProjectModel {
     @Column(nullable = false)
     private ProjectVisibility visibility;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "workspace_id", nullable = false)
     private WorkspaceModel workspace;
 

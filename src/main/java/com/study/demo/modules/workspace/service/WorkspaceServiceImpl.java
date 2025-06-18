@@ -36,14 +36,14 @@ public class WorkspaceServiceImpl implements WorkspaceService {
         return userService;
     }
 
-    public void createDefaultWorkspace(String name, UserModel owner) {
+    public void createDefault(String name, UserModel owner) {
         WorkspaceModel createdWorkspace = new WorkspaceModel();
         createdWorkspace.setOwner(owner);
         createdWorkspace.setName(name);
         this.repository.save(createdWorkspace);
     }
 
-    public List<WorkspaceResponseMapper> getWorkspaces(UUID uuid) {
+    public List<WorkspaceResponseMapper> findAllById(UUID uuid) {
         try {
             UserModel owner = userService.getUserById(uuid);
             List<WorkspaceModel> workspaces = repository.findByOwner(owner);
@@ -62,7 +62,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
         }
     }
 
-    public void createWorkspace(WorkspaceCreationDto workspace) {
+    public void create(WorkspaceCreationDto workspace) {
         try {
             WorkspaceModel createdWorkspace = new WorkspaceModel();
             createdWorkspace.setOwner(userService.getUserById(workspace.getOwner()));
@@ -77,14 +77,13 @@ public class WorkspaceServiceImpl implements WorkspaceService {
         }
     }
 
-    public WorkspaceModel getWorkspaceById(UUID id) throws BadRequestException {
+    public WorkspaceModel findById(UUID id) throws BadRequestException {
         Optional<WorkspaceModel> workspace = repository.findById(id);
 
         if (workspace.isPresent()) {
             return workspace.get();
         } else {
-            throw new BadRequestException("User not found");
-
+            throw new BadRequestException("Workspace not found");
         }
     }
 

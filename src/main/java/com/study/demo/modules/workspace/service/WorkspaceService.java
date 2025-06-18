@@ -10,9 +10,8 @@ import java.util.List;
 import java.util.UUID;
 
 public interface WorkspaceService {
-    void createDefaultWorkspace(String name, UserModel owner);
-    List<WorkspaceResponseMapper> getWorkspaces(UUID uuid);
-    void createWorkspace(WorkspaceCreationDto workspace);
-    WorkspaceModel getWorkspaceById(UUID id) throws BadRequestException;
-
+    void createDefault(String name, UserModel owner);
+    List<WorkspaceResponseMapper> findAllById(UUID uuid);
+    void create(WorkspaceCreationDto workspace);
+    WorkspaceModel findById(UUID id) throws BadRequestException;
 }

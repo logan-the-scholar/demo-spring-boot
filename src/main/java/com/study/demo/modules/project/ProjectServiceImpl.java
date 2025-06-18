@@ -1,7 +1,6 @@
 package com.study.demo.modules.project;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.study.demo.modules.project.mapper.ProjectResponseMapper;
 import com.study.demo.modules.project.model.ProjectCreationDto;
 import com.study.demo.modules.project.model.ProjectModel;
 import com.study.demo.modules.project.repository.ProjectRepository;
@@ -9,10 +8,12 @@ import com.study.demo.modules.workspace.service.WorkspaceService;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.io.File;
-import java.io.IOException;
+import java.net.URI;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service("propertyJson")
 public class ProjectServiceImpl implements ProjectService {
@@ -27,37 +28,37 @@ public class ProjectServiceImpl implements ProjectService {
         this.workspaceService = workspaceService;
     }
 
-    public List<ProjectModel> getAll() {
-        List<ProjectModel> properties;
+//    public List<ProjectModel> getAll() {
+//        List<ProjectModel> properties;
+//
+//        try {
+//            properties = new ObjectMapper().readValue(
+//                    //this.getClass().getClassLoader().getResourceAsStream("/properties.json"),
+//                    //new File(String.valueOf(this.getClass().getResource("properties.json"))),
+//                    new File("src/main/resources/properties.json"),
+//                    new TypeReference<List<ProjectModel>>() {
+//                    });
+//
+//            return properties;
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
-        try {
-            properties = new ObjectMapper().readValue(
-                    //this.getClass().getClassLoader().getResourceAsStream("/properties.json"),
-                    //new File(String.valueOf(this.getClass().getResource("properties.json"))),
-                    new File("src/main/resources/properties.json"),
-                    new TypeReference<List<ProjectModel>>() {
-                    });
-
-            return properties;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void writeAll(List<ProjectModel> properties) {
-        ObjectMapper om = new ObjectMapper();
-
-        try {
-            om.writerWithDefaultPrettyPrinter()
-                    .writeValue(
-                            new File("src/main/resources/properties.json"),
-                            //new File(String.valueOf(this.getClass().getResource("/properties.json"))),
-                            properties);
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    public void writeAll(List<ProjectModel> properties) {
+//        ObjectMapper om = new ObjectMapper();
+//
+//        try {
+//            om.writerWithDefaultPrettyPrinter()
+//                    .writeValue(
+//                            new File("src/main/resources/properties.json"),
+//                            //new File(String.valueOf(this.getClass().getResource("/properties.json"))),
+//                            properties);
+//
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
 //    public ResponseEntity<?> getByOwner(String owner) {
 //        Optional<ProjectModel> optional = this.getAll().stream().filter(p -> p.getOwner().equalsIgnoreCase(owner))
@@ -141,17 +142,40 @@ public class ProjectServiceImpl implements ProjectService {
 //                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Property not found"));
 //    }
 
-    public void createProject(ProjectCreationDto project) {
-        try {
-            //WorkspaceModel workspace = workspaceService.getWorkspaceById(project.getWorkspaceId());
-            ProjectModel createdProject = new ProjectModel();
-            createdProject.setName(project.getName());
-            createdProject.setVisibility(project.getVisibility());
-            createdProject.setWorkspace(workspaceService.getWorkspaceById(project.getWorkspaceId()));
-            repository.save(createdProject);
+    public List<ProjectResponseMapper> findAllById(UUID workspaceId) throws BadRequestException {
+            List<ProjectModel> projects = repository.findByWorkspace(workspaceService.findById(workspaceId));
 
-        } catch (BadRequestException e) {
+            if(projects.isEmpty()) {
+                throw new BadRequestException("No projects found in this workspace");
+            }
+
+            return projects.stream().map(ProjectResponseMapper::fromEntity).toList();
+    }
+
+    public URI create(ProjectCreationDto project) {
+        try {
+            ProjectModel created = new ProjectModel();
+            created.setName(project.getName());
+            created.setVisibility(project.getVisibility());
+            created.setWorkspace(workspaceService.findById(project.getWorkspaceId()));
+            repository.save(created);
+
+            return ServletUriComponentsBuilder.fromCurrentContextPath().path("/{id}")
+                    .buildAndExpand(created.getId())
+                    .toUri();
+
+        } catch (Throwable e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public ProjectResponseMapper findById(UUID projectId) throws BadRequestException {
+        Optional<ProjectModel> project = repository.findById(projectId);
+
+        if(project.isPresent()) {
+            return ProjectResponseMapper.fromEntity(project.get());
+        } else {
+            throw new BadRequestException("Project not found");
         }
     }
 

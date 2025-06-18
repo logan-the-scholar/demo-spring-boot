@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService {
         createdUser.setUserType(UserType.LOCAL);
         UserModel user_ = repository.save(createdUser);
 
-        workspaceService.createDefaultWorkspace(user_.getName(), user_);
+        workspaceService.createDefault(user_.getName(), user_);
 
     }
 
@@ -103,7 +103,7 @@ public class UserServiceImpl implements UserService {
             createdUser.setProfileImage(githubUser.getProfileImage());
             UserModel savedUser = repository.save(createdUser);
 
-            workspaceService.createDefaultWorkspace(savedUser.getName(), savedUser);
+            workspaceService.createDefault(savedUser.getName(), savedUser);
 
             return UserLoginResponseMapper.fromEntity(createdUser, UserRecurrence.FIRST_TIME);
 

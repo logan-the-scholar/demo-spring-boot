@@ -1,9 +1,7 @@
 package com.study.demo.modules.workspace;
 
-import com.study.demo.modules.project.model.ProjectCreationDto;
 import com.study.demo.modules.workspace.mapper.WorkspaceResponseMapper;
 import com.study.demo.modules.workspace.service.WorkspaceService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,8 +23,7 @@ public class WorkspaceController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getWorkspaces(@PathVariable String id) {
         try {
-            UUID parsedUuid = UUID.fromString(id);
-            List<WorkspaceResponseMapper> workspaces = workspaceService.getWorkspaces(parsedUuid);
+            List<WorkspaceResponseMapper> workspaces = workspaceService.findAllById(UUID.fromString(id));
             return ResponseEntity.status(200).body(workspaces);
 
         } catch (Throwable error) {

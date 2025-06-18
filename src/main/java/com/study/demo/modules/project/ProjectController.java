@@ -2,7 +2,6 @@ package com.study.demo.modules.project;
 
 import com.study.demo.modules.file.model.EditedFileDto;
 import com.study.demo.modules.project.model.ProjectCreationDto;
-import com.study.demo.modules.project.model.ProjectModel;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
+import java.util.UUID;
 
 @RestController()
 @RequestMapping("project")
@@ -31,9 +30,24 @@ public class ProjectController {
         this.validator = validator;
     }
 
-    @GetMapping
-    public ResponseEntity<List<ProjectModel>> getAll() {
-        return ResponseEntity.ok(projectService.getAll());
+    @GetMapping("/all/{id}")
+    public ResponseEntity<?> getAll(@PathVariable String id) {
+        try {
+            return ResponseEntity.ok(projectService.findAllById(UUID.fromString(id)));
+        } catch (Throwable e) {
+            return ResponseEntity.status(400).body(e.getMessage());
+
+        }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> get(@PathVariable String id) {
+        try {
+            return ResponseEntity.ok(projectService.findById(UUID.fromString(id)));
+        } catch (Throwable e) {
+            return ResponseEntity.status(400).body(e.getMessage());
+
+        }
     }
 
 //    @GetMapping("/by-owner/{owner}")
@@ -71,14 +85,12 @@ public class ProjectController {
     }
 
     @PostMapping()
-    public ResponseEntity<?> createProject(@RequestBody @Valid ProjectCreationDto newProject) {
+    public ResponseEntity<?> create(@RequestBody @Valid ProjectCreationDto newProject) {
         try {
-            projectService.createProject(newProject);
-            return ResponseEntity.ok("created nicely");
-
-        } catch (Throwable error) {
-            System.err.println(error);
-            return ResponseEntity.status(400).body(error.getMessage());
+            URI location = projectService.create(newProject);
+            return ResponseEntity.created(location).build();
+        } catch (Throwable e) {
+            return ResponseEntity.status(400).body(e.getMessage());
 
         }
     }
