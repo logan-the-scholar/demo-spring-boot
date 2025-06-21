@@ -34,7 +34,7 @@ public class WorkspaceController {
     }
 
     @PostMapping()
-    public ResponseEntity<?> createWorkspace(@PathVariable String id, @RequestBody String nose) {
+    public ResponseEntity<?> create(@PathVariable String id, @RequestBody String nose) {
         return ResponseEntity.status(200).body("not implemented yet");
     }
 

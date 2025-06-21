@@ -1,5 +1,6 @@
 package com.study.demo.modules.user.model;
 
+import com.study.demo.modules.file.model.FileModel;
 import com.study.demo.modules.workspace.model.WorkspaceModel;
 import jakarta.persistence.*;
 
@@ -25,8 +26,10 @@ public class UserModel {
     private UserType userType;
     @Column(unique = true)
     private String sub;
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "owner", cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, orphanRemoval = true)
     private List<WorkspaceModel> workspaces = new ArrayList<>();
+    @OneToMany(mappedBy = "author", cascade = {CascadeType.PERSIST}, orphanRemoval = true)
+    private List<FileModel> authoredFiles = new ArrayList<>();
 
     public UserModel() {
     }
@@ -93,5 +96,13 @@ public class UserModel {
 
     public void setWorkspaces(List<WorkspaceModel> workspaces) {
         this.workspaces = workspaces;
+    }
+
+    public List<FileModel> getAuthoredFiles() {
+        return authoredFiles;
+    }
+
+    public void setAuthoredFiles(List<FileModel> authoredFiles) {
+        this.authoredFiles = authoredFiles;
     }
 }

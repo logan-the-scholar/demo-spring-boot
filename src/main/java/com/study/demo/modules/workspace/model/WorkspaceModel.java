@@ -19,11 +19,11 @@ public class WorkspaceModel {
     @Column(nullable = false)
     private String name;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = false)
     private UserModel owner;
 
-    @OneToMany(mappedBy = "workspace", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "workspace", cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, orphanRemoval = true)
     private List<ProjectModel> projects = new ArrayList<>();
 
     public WorkspaceModel() {

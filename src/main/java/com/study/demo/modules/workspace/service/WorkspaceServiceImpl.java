@@ -1,5 +1,6 @@
 package com.study.demo.modules.workspace.service;
 
+import com.study.demo.common.exception.classes.EmptyResourcesException;
 import com.study.demo.modules.user.model.UserModel;
 import com.study.demo.modules.user.service.UserService;
 import com.study.demo.modules.workspace.mapper.WorkspaceResponseMapper;
@@ -77,13 +78,13 @@ public class WorkspaceServiceImpl implements WorkspaceService {
         }
     }
 
-    public WorkspaceModel findById(UUID id) throws BadRequestException {
+    public WorkspaceModel findById(UUID id) {
         Optional<WorkspaceModel> workspace = repository.findById(id);
 
         if (workspace.isPresent()) {
             return workspace.get();
         } else {
-            throw new BadRequestException("Workspace not found");
+            throw new EmptyResourcesException("Workspace not found");
         }
     }
 

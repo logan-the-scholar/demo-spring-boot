@@ -13,5 +13,5 @@ public interface WorkspaceService {
     void createDefault(String name, UserModel owner);
     List<WorkspaceResponseMapper> findAllById(UUID uuid);
     void create(WorkspaceCreationDto workspace);
-    WorkspaceModel findById(UUID id) throws BadRequestException;
+    WorkspaceModel findById(UUID id);
 }

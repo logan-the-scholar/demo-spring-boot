@@ -58,7 +58,6 @@ public class UserController {
         try {
             UserLoginResponseMapper githubUser = userService.githubSignIn(code);
             return ResponseEntity.status(githubUser.recurrence().equalsIgnoreCase(UserRecurrence.FIRST_TIME.value) ? 201 : 200).body(githubUser);
-            //TODO testear de nuevo el guardado de imagen de github y agregar el gravatar
 
         } catch (Throwable error) {
             return ResponseEntity.status(500).body(error.getMessage());

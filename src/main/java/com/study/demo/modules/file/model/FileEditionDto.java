@@ -5,15 +5,22 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.UUID;
 
-public class EditedFileDto {
+public class FileEditionDto extends FileCreationDto {
 
     @NotNull(message = "File id is required")
     private UUID id;
 
     private String content;
 
-    @NotBlank(message = "The modification must have an author")
-    private String author;
+    private String path;
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
 
     public @NotNull(message = "File id is required") UUID getId() {
         return id;
@@ -31,11 +38,4 @@ public class EditedFileDto {
         this.content = content;
     }
 
-    public @NotBlank(message = "The modification must have an author") String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(@NotBlank(message = "The modification must have an author") String author) {
-        this.author = author;
-    }
 }

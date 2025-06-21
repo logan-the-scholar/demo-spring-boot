@@ -1,9 +1,11 @@
 package com.study.demo.modules.project;
 
-import com.study.demo.modules.file.model.EditedFileDto;
+import com.study.demo.modules.file.model.FileEditionDto;
+import com.study.demo.modules.project.mapper.ProjectResponseMapper;
 import com.study.demo.modules.project.model.ProjectCreationDto;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController()
@@ -35,7 +38,10 @@ public class ProjectController {
         try {
             return ResponseEntity.ok(projectService.findAllById(UUID.fromString(id)));
         } catch (Throwable e) {
-            return ResponseEntity.status(400).body(e.getMessage());
+            //if(e.getClass().isInstance(ExceptionHandler.class)) {
+            throw e;
+            //}
+            //return ResponseEntity.status(400).body(Map.of("fail", e.getMessage()));
 
         }
     }
@@ -43,7 +49,8 @@ public class ProjectController {
     @GetMapping("/{id}")
     public ResponseEntity<?> get(@PathVariable String id) {
         try {
-            return ResponseEntity.ok(projectService.findById(UUID.fromString(id)));
+            ProjectResponseMapper project = ProjectResponseMapper.fromEntity(projectService.findById(UUID.fromString(id)));
+            return ResponseEntity.ok(project);
         } catch (Throwable e) {
             return ResponseEntity.status(400).body(e.getMessage());
 
@@ -79,16 +86,26 @@ public class ProjectController {
 
     @MessageMapping("/{id}/session")
     @SendTo("/topic/project/{id}")
-    public EditedFileDto broadcastEditCode(@DestinationVariable String id, @RequestBody @Valid EditedFileDto editedFile) {
+    public FileEditionDto broadcastEditCode(@DestinationVariable String id, @RequestBody @Valid FileEditionDto editedFile) {
         return editedFile;
-
     }
 
+    //@CrossOrigin(exposedHeaders = "Location")
     @PostMapping()
     public ResponseEntity<?> create(@RequestBody @Valid ProjectCreationDto newProject) {
         try {
-            URI location = projectService.create(newProject);
-            return ResponseEntity.created(location).build();
+            String name = projectService.create(newProject);
+            return ResponseEntity.ok().body(Map.of("name", name, "id", newProject.getWorkspaceId()));
+        } catch (Throwable e) {
+            return ResponseEntity.status(400).body(e.getMessage());
+
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable String id) {
+        try {
+            return ResponseEntity.ok().body(projectService.delete(UUID.fromString(id)));
         } catch (Throwable e) {
             return ResponseEntity.status(400).body(e.getMessage());
 

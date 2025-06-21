@@ -1,8 +1,8 @@
 package com.study.demo.modules.user.service;
 
-import com.study.demo.common.exception.EmailAlreadyExistsException;
-import com.study.demo.common.exception.InvalidCredentialsException;
-import com.study.demo.common.exception.PasswordDontMatchException;
+import com.study.demo.common.exception.classes.EmailAlreadyExistsException;
+import com.study.demo.common.exception.classes.InvalidCredentialsException;
+import com.study.demo.common.exception.classes.PasswordDontMatchException;
 import com.study.demo.common.github.GithubAuthService;
 import com.study.demo.common.github.GithubUserResponse;
 import com.study.demo.modules.user.model.LoginUserDto;

@@ -1,5 +1,6 @@
 package com.study.demo.modules.project;
 
+import com.study.demo.common.exception.classes.EmptyResourcesException;
 import com.study.demo.modules.project.mapper.ProjectResponseMapper;
 import com.study.demo.modules.project.model.ProjectCreationDto;
 import com.study.demo.modules.project.model.ProjectModel;
@@ -8,14 +9,13 @@ import com.study.demo.modules.workspace.service.WorkspaceService;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-@Service("propertyJson")
+@Service
 public class ProjectServiceImpl implements ProjectService {
 
     @Autowired
@@ -142,17 +142,17 @@ public class ProjectServiceImpl implements ProjectService {
 //                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Property not found"));
 //    }
 
-    public List<ProjectResponseMapper> findAllById(UUID workspaceId) throws BadRequestException {
+    public List<ProjectResponseMapper> findAllById(UUID workspaceId) {
             List<ProjectModel> projects = repository.findByWorkspace(workspaceService.findById(workspaceId));
 
             if(projects.isEmpty()) {
-                throw new BadRequestException("No projects found in this workspace");
+                throw new EmptyResourcesException("No projects found in this workspace");
             }
 
             return projects.stream().map(ProjectResponseMapper::fromEntity).toList();
     }
 
-    public URI create(ProjectCreationDto project) {
+    public String create(ProjectCreationDto project) {
         try {
             ProjectModel created = new ProjectModel();
             created.setName(project.getName());
@@ -160,23 +160,27 @@ public class ProjectServiceImpl implements ProjectService {
             created.setWorkspace(workspaceService.findById(project.getWorkspaceId()));
             repository.save(created);
 
-            return ServletUriComponentsBuilder.fromCurrentContextPath().path("/{id}")
-                    .buildAndExpand(created.getId())
-                    .toUri();
+            return created.getName();
 
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
     }
 
-    public ProjectResponseMapper findById(UUID projectId) throws BadRequestException {
+    public ProjectModel findById(UUID projectId) throws BadRequestException {
         Optional<ProjectModel> project = repository.findById(projectId);
 
         if(project.isPresent()) {
-            return ProjectResponseMapper.fromEntity(project.get());
+            return project.get();
         } else {
             throw new BadRequestException("Project not found");
         }
+    }
+
+    public Map<String, String> delete(UUID uuid) throws BadRequestException {
+        ProjectModel project = this.findById(uuid);
+        repository.delete(project);
+        return Map.of("message", "instance deleted successfully");
     }
 
 //    public ResponseEntity<?> modify(String id, SessionModel property) {

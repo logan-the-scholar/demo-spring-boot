@@ -1,6 +1,5 @@
 package com.study.demo;
 
-import com.study.demo.modules.workspace.repository.WorkspaceRepository;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -15,11 +14,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
         "com.study.demo.modules.project",
         "com.study.demo.modules.file"
 })
-//@EnableJpaRepositories(basePackages = {
-//		"com.study.demo.modules.user.repository",
-//        "com.study.demo.modules.workspace.repository"
-//})
-//@EntityScan(basePackages = "com.study.demo.modules")
 @EnableJpaRepositories(basePackages = "com.study.demo.modules")
 @SpringBootApplication
 public class DemoApplication {
