@@ -4,6 +4,8 @@ import com.study.demo.modules.project.model.ProjectModel;
 import com.study.demo.modules.user.model.UserModel;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity(name = "files")
@@ -19,28 +21,24 @@ public class FileModel {
     @JoinColumn(name = "project_id", nullable = false)
     private ProjectModel project;
     private String extension;
-    private String path;
+//    private List<String> path;
+//    private List<String> pathNames;
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", nullable = false)
     private UserModel author;
 
+    @ManyToMany
+    @JoinTable(
+            name = "child_files",
+            joinColumns = @JoinColumn(name = "file_id"),
+            inverseJoinColumns = @JoinColumn(name = "child_file_id")
+    )
+    private List<FileModel> childFiles = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "childFiles", cascade = CascadeType.PERSIST)
+    private List<FileModel> path = new ArrayList<>();
+
     public FileModel() {
-    }
-
-    public String getExtension() {
-        return extension;
-    }
-
-    public void setExtension(String extension) {
-        this.extension = extension;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
     }
 
     public UUID getId() {
@@ -75,11 +73,35 @@ public class FileModel {
         this.project = project;
     }
 
+    public String getExtension() {
+        return extension;
+    }
+
+    public void setExtension(String extension) {
+        this.extension = extension;
+    }
+
     public UserModel getAuthor() {
         return author;
     }
 
     public void setAuthor(UserModel author) {
         this.author = author;
+    }
+
+    public List<FileModel> getChildFiles() {
+        return childFiles;
+    }
+
+    public void setChildFiles(List<FileModel> childFiles) {
+        this.childFiles = childFiles;
+    }
+
+    public List<FileModel> getPath() {
+        return path;
+    }
+
+    public void setPath(List<FileModel> path) {
+        this.path = path;
     }
 }

@@ -7,6 +7,7 @@ import com.study.demo.modules.file.model.FileEditionDto;
 import java.util.UUID;
 
 public interface FileService {
-    FileResponseMapper create(UUID uuid, FileCreationDto file);
+    FileResponseMapper createFile(UUID uuid, FileCreationDto file);
     FileResponseMapper update(UUID uuid, FileEditionDto file);
+    void delete(UUID id);
 }

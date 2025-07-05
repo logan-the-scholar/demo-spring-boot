@@ -1,7 +1,11 @@
 package com.study.demo.modules.file.model;
 
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+
+import java.util.List;
+import java.util.UUID;
 
 public class FileCreationDto {
 
@@ -16,16 +20,8 @@ public class FileCreationDto {
     @NotNull
     private boolean isFolder;
 
-    @NotBlank
-    private String path;
-
-    public @NotBlank String getPath() {
-        return path;
-    }
-
-    public void setPath(@NotBlank String path) {
-        this.path = path;
-    }
+    @Nullable
+    private List<UUID> path;
 
     public @NotBlank(message = "File name can't be empty") String getName() {
         return name;
@@ -58,5 +54,13 @@ public class FileCreationDto {
 
     public void setFolder(@NotNull boolean folder) {
         isFolder = folder;
+    }
+
+    public List<UUID> getPath() {
+        return path;
+    }
+
+    public void setPath(List<UUID> path) {
+        this.path = path;
     }
 }

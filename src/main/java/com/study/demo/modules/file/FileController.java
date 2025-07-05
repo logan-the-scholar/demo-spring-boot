@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.UUID;
 
 @RestController()
@@ -29,20 +30,30 @@ public class FileController {
 
     @CrossOrigin(exposedHeaders = "Location")
     @PostMapping("/{id}")
-    public ResponseEntity<?> create(@PathVariable String id, @RequestBody @Valid FileCreationDto bodyFile) {
+    public ResponseEntity<?> create(@PathVariable String id, @RequestParam(value = "isFolder", required = false, defaultValue = "false") boolean isFolder, @RequestBody @Valid FileCreationDto bodyFile) {
         try {
-            FileResponseMapper createdFile = fileService.create(UUID.fromString(id), bodyFile);
-            return ResponseEntity.status(401).body(createdFile);
+            FileResponseMapper createdFile = fileService.createFile(UUID.fromString(id), bodyFile);
+            return ResponseEntity.status(200).body(createdFile);
+        } catch (Throwable e) {
+            return ResponseEntity.status(400).body(e);
+        }
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable String id, @RequestBody @Valid FileEditionDto bodyFile) {
+        try {
+            FileResponseMapper updatedFile = fileService.update(UUID.fromString(id), bodyFile);
+            return ResponseEntity.status(200).body(updatedFile);
         } catch (Throwable e) {
             return ResponseEntity.status(400).body(e.getMessage());
         }
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<?> edit(@PathVariable String id, @RequestBody @Valid FileEditionDto bodyFile) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable UUID id) {
         try {
-            FileResponseMapper updatedFile = fileService.update(UUID.fromString(id), bodyFile);
-            return ResponseEntity.status(401).body(updatedFile);
+            fileService.delete(id);
+            return ResponseEntity.status(200).body(Map.of("message", id + " successfully deleted"));
         } catch (Throwable e) {
             return ResponseEntity.status(400).body(e.getMessage());
         }

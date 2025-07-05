@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,10 +35,10 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
-//    @ExceptionHandler()
-//    public ResponseEntity<?> common() {
-//        return new ResponseEntity<>("jaja",HttpStatus.NOT_FOUND);
-//    }
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public  ResponseEntity<?> parameterMismatch(MethodArgumentNotValidException exception) {
+        return new ResponseEntity<>(exception.getBody(), HttpStatus.BAD_REQUEST);
+    }
 
     private Map<String, String> format(RuntimeException exception) {
         return Map.of("message", exception.getMessage());

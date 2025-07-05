@@ -14,4 +14,5 @@ public interface ProjectService {
     String create(ProjectCreationDto project);
     ProjectModel findById(UUID projectId) throws BadRequestException;
     Map<String, String> delete(UUID uuid) throws BadRequestException;
+    ProjectResponseMapper get(UUID uuid);
 }

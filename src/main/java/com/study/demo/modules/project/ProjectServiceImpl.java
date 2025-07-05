@@ -1,6 +1,7 @@
 package com.study.demo.modules.project;
 
 import com.study.demo.common.exception.classes.EmptyResourcesException;
+import com.study.demo.common.exception.classes.NotFoundException;
 import com.study.demo.modules.project.mapper.ProjectResponseMapper;
 import com.study.demo.modules.project.model.ProjectCreationDto;
 import com.study.demo.modules.project.model.ProjectModel;
@@ -82,7 +83,7 @@ public class ProjectServiceImpl implements ProjectService {
 //        throw new RuntimeException("Property not found");
 //    }
 
-//    public URI create(ProjectModel property) {
+//    public URI createFile(ProjectModel property) {
 //        List<ProjectModel> properties;
 //        ObjectMapper om = new ObjectMapper();
 //
@@ -181,6 +182,18 @@ public class ProjectServiceImpl implements ProjectService {
         ProjectModel project = this.findById(uuid);
         repository.delete(project);
         return Map.of("message", "instance deleted successfully");
+    }
+
+    public ProjectResponseMapper get(UUID uuid) {
+        System.out.println(1);
+        Optional<ProjectModel> foundProject = repository.findById(uuid);
+        System.out.println(2);
+        if(foundProject.isPresent()) {
+            System.out.println(foundProject.get().getName());
+            return ProjectResponseMapper.fromEntityAndFiles(foundProject.get());
+        }
+
+        throw new NotFoundException("Project not found");
     }
 
 //    public ResponseEntity<?> modify(String id, SessionModel property) {
