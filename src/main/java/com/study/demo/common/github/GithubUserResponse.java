@@ -12,6 +12,7 @@ public class GithubUserResponse {
 
     @JsonProperty("avatar_url")
     private String profileImage;
+    //TODO add gravatar field here and handling in case of nullish
 
     public String getId() {
         return id;
