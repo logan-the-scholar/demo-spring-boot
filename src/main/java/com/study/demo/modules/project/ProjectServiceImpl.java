@@ -1,7 +1,7 @@
 package com.study.demo.modules.project;
 
 import com.study.demo.common.exception.classes.EmptyResourcesException;
-import com.study.demo.common.exception.classes.NotFoundException;
+import com.study.demo.common.exception.classes.ResourceNotFoundException;
 import com.study.demo.modules.project.mapper.ProjectResponseMapper;
 import com.study.demo.modules.project.model.ProjectCreationDto;
 import com.study.demo.modules.project.model.ProjectModel;
@@ -193,7 +193,7 @@ public class ProjectServiceImpl implements ProjectService {
             return ProjectResponseMapper.fromEntityAndFiles(foundProject.get());
         }
 
-        throw new NotFoundException("Project not found");
+        throw new ResourceNotFoundException("Project not found");
     }
 
 //    public ResponseEntity<?> modify(String id, SessionModel property) {

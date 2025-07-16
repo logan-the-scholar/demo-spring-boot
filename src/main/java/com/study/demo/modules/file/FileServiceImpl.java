@@ -1,6 +1,6 @@
 package com.study.demo.modules.file;
 
-import com.study.demo.common.exception.classes.NotFoundException;
+import com.study.demo.common.exception.classes.ResourceNotFoundException;
 import com.study.demo.modules.file.mapper.FileResponseMapper;
 import com.study.demo.modules.file.model.FileCreationDto;
 import com.study.demo.modules.file.model.FileEditionDto;
@@ -13,9 +13,7 @@ import com.study.demo.modules.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class FileServiceImpl implements FileService {
@@ -35,24 +33,23 @@ public class FileServiceImpl implements FileService {
         try {
             ProjectModel project = projectService.findById(uuid);
             UserModel author = userService.getUserById(UUID.fromString(file.getAuthor()));
-
             FileModel createdFile = new FileModel();
+            //Map<UUID, String> fullPath = new HashMap<>();
+
             createdFile.setProject(project);
             createdFile.setExtension(file.getExtension());
             createdFile.setName(file.getName());
             createdFile.setAuthor(author);
+            createdFile.setChildren(new ArrayList<>());
 
-            createdFile.setChildFiles(new ArrayList<>());
-            //List<FileModel> filePath = new ArrayList<>();
+            assert file.getPath() != null;
             if (!file.getPath().isEmpty()) {
-                file.getPath().forEach((f) -> {
-                    FileModel fd = this.findById(f);
-                    fd.getChildFiles().add(createdFile);
-                    createdFile.getPath().addFirst(fd);
-                });
+                //file.getPath().stream().map(this::findById).forEach((f) -> fullPath.put(f.getId(), f.getName()));
+                file.getPath().forEach((f) -> createdFile.getFullPath().add(this.findById(f).getId()));
 
-            } else {
-                createdFile.setPath(new ArrayList<>());
+                FileModel parentFile = this.findById(file.getPath().getLast());
+                parentFile.getChildren().add(createdFile);
+                createdFile.setParent(parentFile);
             }
 
             FileModel savedFile = this.repository.save(createdFile);
@@ -74,7 +71,8 @@ public class FileServiceImpl implements FileService {
     }
 
     public void delete(UUID id) {
-
+        FileModel file = this.findById(id);
+        repository.delete(file);
     }
 
     public FileModel findById(UUID uuid) {
@@ -83,7 +81,7 @@ public class FileServiceImpl implements FileService {
         if (file.isPresent()) {
             return file.get();
         } else {
-            throw new NotFoundException("File not found");
+            throw new ResourceNotFoundException("File not found");
         }
     }
 }
