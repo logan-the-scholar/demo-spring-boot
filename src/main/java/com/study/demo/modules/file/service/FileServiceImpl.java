@@ -1,12 +1,12 @@
-package com.study.demo.modules.file;
+package com.study.demo.modules.file.service;
 
 import com.study.demo.common.exception.classes.ResourceNotFoundException;
-import com.study.demo.modules.file.mapper.FileResponseMapper;
+import com.study.demo.modules.file.model.FileResponseMapper;
 import com.study.demo.modules.file.model.FileCreationDto;
 import com.study.demo.modules.file.model.FileEditionDto;
 import com.study.demo.modules.file.model.FileModel;
 import com.study.demo.modules.file.repository.FileRepository;
-import com.study.demo.modules.project.ProjectService;
+import com.study.demo.modules.project.service.ProjectService;
 import com.study.demo.modules.project.model.ProjectModel;
 import com.study.demo.modules.user.model.UserModel;
 import com.study.demo.modules.user.service.UserService;

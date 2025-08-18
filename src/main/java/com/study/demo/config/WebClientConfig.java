@@ -2,28 +2,20 @@ package com.study.demo.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
-import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-@Configuration
+@Component("webClientConfig")
 public class WebClientConfig {
 
-    private static final Logger log = LoggerFactory.getLogger(WebClientConfig.class);
+    private Logger log;
 
-    @Bean
-    public WebClient webClient(WebClient.Builder builder) {
-        return builder.baseUrl("https://github.com")
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .filter(logRequest()).filter(logResponse()).filter(errorResponse())
-                .build();
+    public void log(Class<?> classLog) {
+        this.log = LoggerFactory.getLogger(classLog);
     }
 
-    private ExchangeFilterFunction logRequest() {
+    public ExchangeFilterFunction logRequest() {
         return ExchangeFilterFunction.ofRequestProcessor(clientRequest -> {
             log.info("Request: {} {}", clientRequest.method(), clientRequest.url());
             clientRequest.headers().forEach((name, values) -> values.forEach(value -> log.info("{}={}", name, value)));
@@ -31,14 +23,14 @@ public class WebClientConfig {
         });
     }
 
-    private ExchangeFilterFunction logResponse() {
+    public ExchangeFilterFunction logResponse() {
         return ExchangeFilterFunction.ofResponseProcessor(clientResponse -> {
             log.info("Response: {}", clientResponse.statusCode().value());
             return Mono.just(clientResponse);
         });
     }
 
-    private ExchangeFilterFunction errorResponse() {
+    public ExchangeFilterFunction errorResponse() {
         return ExchangeFilterFunction.ofResponseProcessor(clientResponse -> {
             if (clientResponse.statusCode().isError()) {
 

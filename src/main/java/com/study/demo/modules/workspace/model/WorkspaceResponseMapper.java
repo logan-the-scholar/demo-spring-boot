@@ -1,6 +1,4 @@
-package com.study.demo.modules.workspace.mapper;
-
-import com.study.demo.modules.workspace.model.WorkspaceModel;
+package com.study.demo.modules.workspace.model;
 
 import java.util.UUID;
 

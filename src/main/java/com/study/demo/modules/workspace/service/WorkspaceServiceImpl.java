@@ -3,7 +3,7 @@ package com.study.demo.modules.workspace.service;
 import com.study.demo.common.exception.classes.EmptyResourcesException;
 import com.study.demo.modules.user.model.UserModel;
 import com.study.demo.modules.user.service.UserService;
-import com.study.demo.modules.workspace.mapper.WorkspaceResponseMapper;
+import com.study.demo.modules.workspace.model.WorkspaceResponseMapper;
 import com.study.demo.modules.workspace.model.WorkspaceCreationDto;
 import com.study.demo.modules.workspace.model.WorkspaceModel;
 import com.study.demo.modules.workspace.repository.WorkspaceRepository;

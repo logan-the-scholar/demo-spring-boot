@@ -1,6 +1,6 @@
 package com.study.demo.modules.workspace;
 
-import com.study.demo.modules.workspace.mapper.WorkspaceResponseMapper;
+import com.study.demo.modules.workspace.model.WorkspaceResponseMapper;
 import com.study.demo.modules.workspace.service.WorkspaceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

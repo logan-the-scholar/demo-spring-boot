@@ -1,4 +1,4 @@
-package com.study.demo.common.github;
+package com.study.demo.modules.github.mapper;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

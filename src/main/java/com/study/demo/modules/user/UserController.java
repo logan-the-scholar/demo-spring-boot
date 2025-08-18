@@ -3,7 +3,7 @@ package com.study.demo.modules.user;
 import com.study.demo.modules.user.model.LoginUserDto;
 import com.study.demo.modules.user.model.RegisterUserDto;
 import com.study.demo.modules.user.model.UserRecurrence;
-import com.study.demo.modules.user.mapper.UserLoginResponseMapper;
+import com.study.demo.modules.user.model.UserLoginResponseMapper;
 import com.study.demo.modules.user.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;

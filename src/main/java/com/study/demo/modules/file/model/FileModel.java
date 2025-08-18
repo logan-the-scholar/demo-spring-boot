@@ -19,7 +19,7 @@ public class FileModel {
     @Column(nullable = false)
     private String name;
 
-    private String content;
+    private byte[] content;
 
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", nullable = false)
@@ -38,6 +38,7 @@ public class FileModel {
     @JoinColumn(name = "parent_id")
     private FileModel parent;
 
+    @Column(name = "full_path")
     private List<UUID> fullPath = new ArrayList<>();
 
     public FileModel() {
@@ -59,11 +60,11 @@ public class FileModel {
         this.name = name;
     }
 
-    public String getContent() {
+    public byte[] getContent() {
         return content;
     }
 
-    public void setContent(String content) {
+    public void setContent(byte[] content) {
         this.content = content;
     }
 

@@ -1,5 +1,7 @@
-package com.study.demo.common.github;
+package com.study.demo.modules.github;
 
+import com.study.demo.modules.github.mapper.AccessTokenResponse;
+import com.study.demo.modules.github.mapper.GithubUserResponse;
 import com.study.demo.config.GithubAuthConfigProperties;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -22,15 +24,14 @@ public class GithubAuthService {
         this.githubProperties = githubProperties;
     }
 
-    public String getAccessToken(String code) {
+    public AccessTokenResponse requestAccessToken(String code) {
         AccessTokenResponse response = webClient.post().uri("/login/oauth/access_token")
                 .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
                 .bodyValue(Map.of(
                         "client_id", githubProperties.getClientId(),
                         "client_secret", githubProperties.getClientSecret(),
                         "code", code
-                )).retrieve()
-                .bodyToMono(AccessTokenResponse.class)
+                )).retrieve().bodyToMono(AccessTokenResponse.class)
                 .block();
 
         assert response != null;
@@ -38,22 +39,35 @@ public class GithubAuthService {
             throw new RuntimeException("Authentication failed: " + response.getErrorDescription());
         }
 
-        System.out.println(response);
-
-        return response.getAccessToken();
+        return response;
     }
 
-    public GithubUserResponse getUserData(String code) {
-        String token = getAccessToken(code);
+    public GithubUserResponse requestUserData(String accessToken) {
         WebClient.ResponseSpec response = WebClient.create("https://api.github.com")
                 .get().uri("/user")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                 .header(HttpHeaders.ACCEPT, "application/vnd.github+json")
                 .retrieve();
 
-        GithubUserResponse githubUser = response.bodyToMono(GithubUserResponse.class).block();
-        System.out.println(githubUser);
+        return response.bodyToMono(GithubUserResponse.class).block();
+    }
 
-        return githubUser;
+    public AccessTokenResponse requestRefreshToken(String refreshToken) {
+        AccessTokenResponse response = webClient.post().uri("login/oauth/access_token")
+                .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                .bodyValue(Map.of(
+                        "client_id", githubProperties.getClientId(),
+                        "client_secret", githubProperties.getClientSecret(),
+                        "grant_type", "refresh_token",
+                        "refresh_token", refreshToken
+                ))
+                .retrieve().bodyToMono(AccessTokenResponse.class).block();
+
+        assert response != null;
+        if (response.getAccessToken() == null) {
+            throw new RuntimeException("Authentication failed: " + response.getErrorDescription());
+        }
+
+        return response;
     }
 }

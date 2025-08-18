@@ -1,6 +1,4 @@
-package com.study.demo.modules.file.mapper;
-
-import com.study.demo.modules.file.model.FileModel;
+package com.study.demo.modules.file.model;
 
 import java.util.List;
 import java.util.UUID;

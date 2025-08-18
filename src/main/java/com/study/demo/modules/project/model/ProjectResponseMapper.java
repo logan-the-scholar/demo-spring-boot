@@ -1,8 +1,6 @@
-package com.study.demo.modules.project.mapper;
+package com.study.demo.modules.project.model;
 
-import com.study.demo.modules.file.mapper.FileResponseMapper;
-import com.study.demo.modules.project.model.ProjectModel;
-import com.study.demo.modules.project.model.ProjectVisibility;
+import com.study.demo.modules.file.model.FileResponseMapper;
 
 import java.util.List;
 import java.util.UUID;

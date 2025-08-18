@@ -1,7 +1,4 @@
-package com.study.demo.modules.user.mapper;
-
-import com.study.demo.modules.user.model.UserRecurrence;
-import com.study.demo.modules.user.model.UserModel;
+package com.study.demo.modules.user.model;
 
 import java.util.UUID;
 

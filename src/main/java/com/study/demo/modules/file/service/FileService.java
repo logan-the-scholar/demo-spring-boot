@@ -1,6 +1,6 @@
-package com.study.demo.modules.file;
+package com.study.demo.modules.file.service;
 
-import com.study.demo.modules.file.mapper.FileResponseMapper;
+import com.study.demo.modules.file.model.FileResponseMapper;
 import com.study.demo.modules.file.model.FileCreationDto;
 import com.study.demo.modules.file.model.FileEditionDto;
 

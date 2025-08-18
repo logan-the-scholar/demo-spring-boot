@@ -1,8 +1,8 @@
-package com.study.demo.modules.project;
+package com.study.demo.modules.project.service;
 
 import com.study.demo.common.exception.classes.EmptyResourcesException;
 import com.study.demo.common.exception.classes.ResourceNotFoundException;
-import com.study.demo.modules.project.mapper.ProjectResponseMapper;
+import com.study.demo.modules.project.model.ProjectResponseMapper;
 import com.study.demo.modules.project.model.ProjectCreationDto;
 import com.study.demo.modules.project.model.ProjectModel;
 import com.study.demo.modules.project.repository.ProjectRepository;
