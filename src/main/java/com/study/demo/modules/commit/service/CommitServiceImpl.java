@@ -1,8 +1,8 @@
 package com.study.demo.modules.commit.service;
 
-import com.study.demo.modules.commit.model.CommitModel;
+import com.study.demo.common.exception.classes.ResourceNotFoundException;
+import com.study.demo.modules.commit.model.Commit;
 import com.study.demo.modules.commit.repository.CommitRepository;
-import com.study.demo.modules.file.model.FileModel;
 import com.study.demo.modules.file.service.FileVersionService;
 import com.study.demo.modules.project.model.ProjectModel;
 import com.study.demo.modules.user.model.UserModel;
@@ -24,17 +24,39 @@ public class CommitServiceImpl implements CommitService {
         this.fileVersionService = fileVersionService;
     }
 
-    public CommitModel createFromBase(ProjectModel project, UserModel author) {
-        CommitModel initialCommit = new CommitModel();
+    public Commit createFromBase(ProjectModel project, UserModel author) {
+        Commit initialCommit = new Commit();
         initialCommit.setStatus("drafted");
         initialCommit.setProject(project);
         initialCommit.setAuthor(author);
         repository.save(initialCommit);
 
-        List<FileModel> files = project.getFiles();
-        fileVersionService.create();
+//        project.getFiles().forEach((file) -> {
+//            fileVersionService.create(file, initialCommit);
+//        });
 
         return initialCommit;
 
+    }
+
+    public Commit createDraft(ProjectModel project) {
+        Commit draftCommit = new Commit();
+        draftCommit.setStatus("drafted");
+        draftCommit.setProject(project);
+        repository.save(draftCommit);
+
+        return draftCommit;
+    }
+
+    public Commit findById(UUID commitId) {
+        return repository.findById(commitId).orElseThrow(() -> new ResourceNotFoundException("Commit " + commitId + " not found"));
+    }
+
+    public List<Commit> findAllById(List<UUID> idLIst) {
+        List<Commit> commitList = repository.findAllById(idLIst);
+        if (commitList.isEmpty() ) {
+            throw new ResourceNotFoundException("The commit list is empty");
+        }
+        return commitList;
     }
 }

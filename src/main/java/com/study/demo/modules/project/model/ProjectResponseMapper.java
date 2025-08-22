@@ -1,12 +1,11 @@
 package com.study.demo.modules.project.model;
 
-import com.study.demo.modules.file.model.FileResponseMapper;
+import com.study.demo.modules.branch.model.Branch;
 
 import java.util.List;
 import java.util.UUID;
 
-public record ProjectResponseMapper(UUID id, String name, ProjectVisibility visibility,
-                                    List<FileResponseMapper> files) {
+public record ProjectResponseMapper(UUID id, String name, ProjectVisibility visibility, List<String> branches) {
     public static ProjectResponseMapper fromEntity(ProjectModel project) {
         return new ProjectResponseMapper(
                 project.getId(),
@@ -16,12 +15,12 @@ public record ProjectResponseMapper(UUID id, String name, ProjectVisibility visi
         );
     }
 
-    public static ProjectResponseMapper fromEntityAndFiles(ProjectModel project) {
+    public static ProjectResponseMapper fromEntityAndBranches(ProjectModel project) {
         return new ProjectResponseMapper(
                 project.getId(),
                 project.getName(),
                 project.getVisibility(),
-                project.getFiles().stream().map(FileResponseMapper::fromEntity).toList()
+                project.getBranches().stream().map(Branch::getName).toList()
         );
     }
 }

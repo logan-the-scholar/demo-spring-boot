@@ -1,11 +1,5 @@
 package com.study.demo;
 
-import com.google.crypto.tink.CleartextKeysetHandle;
-import com.google.crypto.tink.JsonKeysetWriter;
-import com.google.crypto.tink.KeysetHandle;
-import com.google.crypto.tink.aead.AeadKeyTemplates;
-import com.google.crypto.tink.config.TinkConfig;
-import org.apache.logging.log4j.util.InternalException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -19,7 +13,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 		"com.study.demo.modules.workspace",
         "com.study.demo.modules.project",
         "com.study.demo.modules.file",
-        "com.study.demo.modules.token"
+        "com.study.demo.modules.token",
+        "com.study.demo.modules.commit",
+        "com.study.demo.modules.branch"
 })
 @EnableJpaRepositories(basePackages = "com.study.demo.modules")
 @SpringBootApplication

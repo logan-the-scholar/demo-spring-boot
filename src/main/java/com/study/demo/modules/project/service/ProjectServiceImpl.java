@@ -169,13 +169,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     public ProjectModel findById(UUID projectId) throws BadRequestException {
-        Optional<ProjectModel> project = repository.findById(projectId);
-
-        if(project.isPresent()) {
-            return project.get();
-        } else {
-            throw new BadRequestException("Project not found");
-        }
+        return repository.findById(projectId).orElseThrow(() -> new BadRequestException("Project not found"));
     }
 
     public Map<String, String> delete(UUID uuid) throws BadRequestException {
@@ -185,36 +179,12 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     public ProjectResponseMapper get(UUID uuid) {
-        System.out.println(1);
         Optional<ProjectModel> foundProject = repository.findById(uuid);
-        System.out.println(2);
         if(foundProject.isPresent()) {
-            System.out.println(foundProject.get().getName());
-            return ProjectResponseMapper.fromEntityAndFiles(foundProject.get());
+            return ProjectResponseMapper.fromEntityAndBranches(foundProject.get());
         }
 
         throw new ResourceNotFoundException("Project not found");
     }
 
-//    public ResponseEntity<?> modify(String id, SessionModel property) {
-//        List<SessionModel> properties = this.getAll();
-//
-//        return properties.stream().filter(p -> p.getID().equalsIgnoreCase(id))
-//                .findFirst()
-//                .<ResponseEntity<?>>map(p -> {
-//                    if (property.getOwner() != null) {
-//                        p.setOwner(property.getOwner());
-//                    }
-//                    if (property.getRooms() != null) {
-//                        p.setRooms(property.getRooms());
-//                    }
-//                    if (property.getAddress() != null) {
-//                        p.setAddress(property.getAddress());
-//                    }
-//
-//
-//                    return ResponseEntity.ok(p);
-//                })
-//                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Property not found"));
-//    }
 }

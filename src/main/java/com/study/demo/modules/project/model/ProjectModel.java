@@ -1,6 +1,8 @@
 package com.study.demo.modules.project.model;
 
-import com.study.demo.modules.file.model.FileModel;
+import com.study.demo.modules.branch.model.Branch;
+import com.study.demo.modules.commit.model.Commit;
+import com.study.demo.modules.file.model.File;
 import com.study.demo.modules.workspace.model.WorkspaceModel;
 import jakarta.persistence.*;
 
@@ -26,8 +28,12 @@ public class ProjectModel {
     @JoinColumn(name = "workspace_id", nullable = false)
     private WorkspaceModel workspace;
 
-    @OneToMany(mappedBy = "project", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
-    private List<FileModel> files = new ArrayList<>();
+//    @OneToMany(mappedBy = "project", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+//    private List<File> files = new ArrayList<>();
+
+    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    @Column(name = "branches_ids")
+    private List<Branch> branches;
 
     public ProjectModel() {
     }
@@ -56,13 +62,13 @@ public class ProjectModel {
         this.workspace = workspace;
     }
 
-    public List<FileModel> getFiles() {
-        return files;
-    }
-
-    public void setFiles(List<FileModel> files) {
-        this.files = files;
-    }
+//    public List<File> getFiles() {
+//        return files;
+//    }
+//
+//    public void setFiles(List<File> files) {
+//        this.files = files;
+//    }
 
     public ProjectVisibility getVisibility() {
         return visibility;
@@ -70,5 +76,13 @@ public class ProjectModel {
 
     public void setVisibility(ProjectVisibility visibility) {
         this.visibility = visibility;
+    }
+
+    public List<Branch> getBranches() {
+        return branches;
+    }
+
+    public void setBranches(List<Branch> branches) {
+        this.branches = branches;
     }
 }

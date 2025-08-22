@@ -1,10 +1,9 @@
 package com.study.demo.modules.file.service;
 
 import com.study.demo.common.exception.classes.ResourceNotFoundException;
-import com.study.demo.modules.file.model.FileResponseMapper;
-import com.study.demo.modules.file.model.FileCreationDto;
-import com.study.demo.modules.file.model.FileEditionDto;
-import com.study.demo.modules.file.model.FileModel;
+import com.study.demo.modules.branch.model.Branch;
+import com.study.demo.modules.branch.service.BranchService;
+import com.study.demo.modules.file.model.*;
 import com.study.demo.modules.file.repository.FileRepository;
 import com.study.demo.modules.project.service.ProjectService;
 import com.study.demo.modules.project.model.ProjectModel;
@@ -22,61 +21,100 @@ public class FileServiceImpl implements FileService {
     private final FileRepository repository;
     private final ProjectService projectService;
     private final UserService userService;
+    private final FileVersionService fileVersionService;
+    private final BranchService branchService;
 
-    public FileServiceImpl(FileRepository repository, ProjectService projectService, UserService userService) {
+    public FileServiceImpl(FileRepository repository, ProjectService projectService, UserService userService, FileVersionService fileVersionService, BranchService branchService) {
         this.repository = repository;
         this.projectService = projectService;
         this.userService = userService;
+        this.fileVersionService = fileVersionService;
+        this.branchService = branchService;
     }
 
-    public FileResponseMapper createFile(UUID uuid, FileCreationDto file) {
+    public FileResponseMapper createFile(UUID projectId, FileCreationDto file) {
         try {
-            ProjectModel project = projectService.findById(uuid);
-            UserModel author = userService.getUserById(UUID.fromString(file.getAuthor()));
-            FileModel createdFile = new FileModel();
-            //Map<UUID, String> fullPath = new HashMap<>();
+            ProjectModel project = projectService.findById(projectId);
+            UserModel author = userService.getUserById(file.getAuthor());
 
+            Branch branch = branchService.findByProjectAndName(project, file.getBranch()).orElseThrow(() ->
+                    new ResourceNotFoundException(file.getBranch() + " branch can't be found"));
+
+            File createdFile = new File();
             createdFile.setProject(project);
-            createdFile.setExtension(file.getExtension());
-            createdFile.setName(file.getName());
             createdFile.setAuthor(author);
-            createdFile.setChildren(new ArrayList<>());
 
-            assert file.getPath() != null;
-            if (!file.getPath().isEmpty()) {
-                //file.getPath().stream().map(this::findById).forEach((f) -> fullPath.put(f.getId(), f.getName()));
-                file.getPath().forEach((f) -> createdFile.getFullPath().add(this.findById(f).getId()));
+            FileVersion firstVersion = fileVersionService.create(createdFile, branch.getDraftCommit(), file);
+            //repository.save(createdFile);
 
-                FileModel parentFile = this.findById(file.getPath().getLast());
-                parentFile.getChildren().add(createdFile);
-                createdFile.setParent(parentFile);
-            }
-
-            FileModel savedFile = this.repository.save(createdFile);
-
-            return FileResponseMapper.fromEntity(savedFile);
+            return FileResponseMapper.fromEntity(firstVersion, branch.getId());
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
     }
 
-    public FileResponseMapper update(UUID uuid, FileEditionDto pFile) {
+    public FileResponseMapper update(UUID projectId, FileEditionDto pFile) {
         try {
-            FileModel file = this.findById(uuid);
+            ProjectModel project = projectService.findById(projectId);
 
-            return FileResponseMapper.fromEntity(file);
+            Branch branch = branchService.findByProjectAndName(project, pFile.getBranch()).orElseThrow(() ->
+                    new ResourceNotFoundException(pFile.getBranch() + " branch can't be found"));
+
+//            if (!fileVersionService.existsByPath(pFile.getPath(), branch.getDraftCommit().getId())) {
+//                File refFile = this.findById(pFile.getId());
+//                FileCreationDto aaa = new FileCreationDto();
+//
+//                aaa.setExtension();
+//                aaa.setName();
+//                aaa.setPath();
+//                aaa.setContent();
+//
+//                return FileResponseMapper.fromEntity(fileVersionService.create(refFile, branch.getDraftCommit(), aaa));
+//
+//            } else {
+                return FileResponseMapper.fromEntity(fileVersionService.update(branch.getDraftCommit(), pFile), branch.getId());
+
+            //}
+//            if (pFile.getNewPath() != null) {
+//
+//            }
+//            if (pFile.getNewName() != null) {
+//                file.setName(pFile.getNewName());
+//            }
+//            if (pFile.getNewExtension() != null) {
+//                file.setExtension(pFile.getNewExtension());
+//            }
+            //return FileResponseMapper.fromEntity(file);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
     }
+
+    //TODO agregar was_moved was_deleted para poder manejarlo
+//    public FileResponseMapper updateUnversioned(UUID fileId, UUID projectId, FileEditionDto pFile) {
+//        try {
+//            FileVersion file = fileVersionService.findById(fileId);
+//
+//            if (pFile.getNewPath() != null) {
+//
+//            }
+//            if (pFile.getNewName() != null) {
+//               file.setName(pFile.getName());
+//            }
+//
+//            return FileResponseMapper.fromEntity(file);
+//        } catch (Throwable e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
     public void delete(UUID id) {
-        FileModel file = this.findById(id);
+        File file = this.findById(id);
         repository.delete(file);
     }
 
-    public FileModel findById(UUID uuid) {
-        Optional<FileModel> file = repository.findById(uuid);
+    public File findById(UUID uuid) {
+        Optional<File> file = repository.findById(uuid);
 
         if (file.isPresent()) {
             return file.get();

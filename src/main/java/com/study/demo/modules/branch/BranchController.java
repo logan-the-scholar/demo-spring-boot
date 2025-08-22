@@ -1,11 +1,10 @@
 package com.study.demo.modules.branch;
 
 import com.study.demo.modules.branch.model.BranchCreationDto;
+import com.study.demo.modules.branch.model.BranchResponseMapper;
 import com.study.demo.modules.branch.service.BranchService;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
@@ -29,10 +28,10 @@ public class BranchController {
         this.validator = validator;
     }
 
-    @PostMapping("/{id}")
-    public ResponseEntity<?> create(@PathVariable String id, @RequestBody @Valid BranchCreationDto body) {
+    @PostMapping("/{repo}")
+    public ResponseEntity<?> create(@PathVariable String repo,@RequestBody @Valid BranchCreationDto body) {
         try {
-            branchService.create(UUID.fromString(id), body.getName());
+            branchService.create(UUID.fromString(repo), body);
             return ResponseEntity.status(200).body(Map.of("message", body.getName() + " successfully created"));
         } catch (Throwable e) {
             return ResponseEntity.status(400).body(e.getMessage());
@@ -44,6 +43,16 @@ public class BranchController {
         try {
             branchService.createDefault(UUID.fromString(id));
             return ResponseEntity.status(200).body(Map.of("message", "main successfully created"));
+        } catch (Throwable e) {
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/{repo}/branch/{branch}")
+    public ResponseEntity<?> getAndFiles(@PathVariable String repo, @PathVariable String branch) {
+        try {
+            BranchResponseMapper branchResponse = branchService.getFromHead(UUID.fromString(repo), branch);
+            return ResponseEntity.ok(branchResponse);
         } catch (Throwable e) {
             return ResponseEntity.status(400).body(e.getMessage());
         }
