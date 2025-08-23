@@ -1,8 +1,9 @@
 package com.study.demo.modules.file;
 
-import com.study.demo.modules.file.mapper.FileResponseMapper;
+import com.study.demo.modules.file.model.FileResponseMapper;
 import com.study.demo.modules.file.model.FileCreationDto;
 import com.study.demo.modules.file.model.FileEditionDto;
+import com.study.demo.modules.file.service.FileService;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +40,7 @@ public class FileController {
         }
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/b/{id}")
     public ResponseEntity<?> update(@PathVariable String id, @RequestBody @Valid FileEditionDto bodyFile) {
         try {
             FileResponseMapper updatedFile = fileService.update(UUID.fromString(id), bodyFile);

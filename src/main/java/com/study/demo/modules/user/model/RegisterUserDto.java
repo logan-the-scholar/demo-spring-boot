@@ -1,6 +1,5 @@
 package com.study.demo.modules.user.model;
 
-
 import jakarta.validation.constraints.NotBlank;
 
 public class RegisterUserDto extends LoginUserDto {

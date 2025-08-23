@@ -2,6 +2,7 @@ package com.study.demo.modules.project;
 
 import com.study.demo.modules.file.model.FileEditionDto;
 import com.study.demo.modules.project.model.ProjectCreationDto;
+import com.study.demo.modules.project.service.ProjectService;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;

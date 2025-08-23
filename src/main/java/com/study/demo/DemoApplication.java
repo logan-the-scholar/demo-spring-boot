@@ -12,7 +12,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 		"com.study.demo.modules.user",
 		"com.study.demo.modules.workspace",
         "com.study.demo.modules.project",
-        "com.study.demo.modules.file"
+        "com.study.demo.modules.file",
+        "com.study.demo.modules.token",
+        "com.study.demo.modules.commit",
+        "com.study.demo.modules.branch"
 })
 @EnableJpaRepositories(basePackages = "com.study.demo.modules")
 @SpringBootApplication
@@ -21,6 +24,17 @@ public class DemoApplication {
     public static void main(String[] args) {
         SpringApplication.run(DemoApplication.class, args);
         System.out.println("Application Running in port 8080");
+
+//        try {
+//            TinkConfig.register();
+//            KeysetHandle handle = KeysetHandle.generateNew(AeadKeyTemplates.AES256_GCM);
+//            java.nio.file.Files.createDirectories(java.nio.file.Path.of("secrets"));
+//            CleartextKeysetHandle.write(
+//                    handle,
+//                    JsonKeysetWriter.withPath(java.nio.file.Path.of("secrets/github.aead.json")));
+//        } catch(Throwable e) {
+//            throw new InternalException(e);
+//        }
     }
 
     @Bean

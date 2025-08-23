@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 import com.study.demo.modules.user.model.UserModel;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -12,8 +13,7 @@ public interface UserRepository extends JpaRepository<UserModel, UUID> {
 
     boolean existsByEmail(String email);
 
-    List<UserModel> findByEmail(String email);
+    Optional<UserModel> findByEmail(String email);
 
-    List<UserModel> findBySub(String sub);
-
+    Optional<UserModel> findBySub(String sub);
 }
