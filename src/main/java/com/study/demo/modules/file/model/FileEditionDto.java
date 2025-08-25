@@ -15,7 +15,8 @@ public class FileEditionDto {
     private UUID id;
 
     @NotBlank(message = "The modification must have an author")
-    private UUID author;
+    @Size(min = 4, max = 30)
+    private String author;
 
     @NotNull
     @IsPathFormat
@@ -49,11 +50,11 @@ public class FileEditionDto {
         this.id = id;
     }
 
-    public @NotBlank(message = "The modification must have an author") UUID getAuthor() {
+    public @NotBlank(message = "The modification must have an author") @Size(min = 4, max = 30) String getAuthor() {
         return author;
     }
 
-    public void setAuthor(@NotBlank(message = "The modification must have an author") UUID author) {
+    public void setAuthor(@NotBlank(message = "The modification must have an author") @Size(min = 4, max = 30) String author) {
         this.author = author;
     }
 

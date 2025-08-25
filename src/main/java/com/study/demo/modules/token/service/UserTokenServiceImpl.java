@@ -6,7 +6,7 @@ import com.study.demo.modules.github.GithubAuthService;
 import com.study.demo.modules.github.mapper.GithubUserResponse;
 import com.study.demo.modules.token.model.UserTokenModel;
 import com.study.demo.modules.token.repository.UserTokenRepository;
-import com.study.demo.modules.user.model.UserModel;
+import com.study.demo.modules.user.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -43,7 +43,7 @@ public class UserTokenServiceImpl implements UserTokenService {
         return githubAuthService.requestUserData(token);
     }
 
-    public void create(AccessTokenResponse accessTokenSet, UserModel user) {
+    public void create(AccessTokenResponse accessTokenSet, User user) {
         UserTokenModel userToken = new UserTokenModel();
 
         try {
@@ -60,7 +60,7 @@ public class UserTokenServiceImpl implements UserTokenService {
         }
     }
 
-    public void updateOrCreate(AccessTokenResponse accessTokenSet, UserModel user) {
+    public void updateOrCreate(AccessTokenResponse accessTokenSet, User user) {
         Optional<UserTokenModel> tokens = this.repository.findByUser(user);
 
         tokens.ifPresentOrElse((present) -> {
@@ -94,7 +94,7 @@ public class UserTokenServiceImpl implements UserTokenService {
 
     }
 
-    public String getOrRefreshToken(UserModel user) {
+    public String getOrRefreshToken(User user) {
         UserTokenModel tokens = this.repository.findByUser(user).orElseThrow(() -> new NoSuchElementException("No tokens found for this user"));
 
         try {

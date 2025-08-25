@@ -2,8 +2,8 @@ package com.study.demo.modules.commit.model;
 
 import com.study.demo.modules.branch.model.Branch;
 import com.study.demo.modules.file.model.FileVersion;
-import com.study.demo.modules.project.model.ProjectModel;
-import com.study.demo.modules.user.model.UserModel;
+import com.study.demo.modules.project.model.Project;
+import com.study.demo.modules.user.model.User;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -17,13 +17,13 @@ public class Commit {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private ProjectModel project;
+    private Project project;
 
     @Column(nullable = true)
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private UserModel author;
+    private User author;
 
     @Column(nullable = false)
     private String status;
@@ -34,7 +34,8 @@ public class Commit {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "commit", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<FileVersion> files;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "branch", nullable = true)
     private Branch branch;
 
     @Column(name = "created_at", nullable = false)
@@ -47,11 +48,11 @@ public class Commit {
         return id;
     }
 
-    public ProjectModel getProject() {
+    public Project getProject() {
         return project;
     }
 
-    public void setProject(ProjectModel project) {
+    public void setProject(Project project) {
         this.project = project;
     }
 
@@ -67,11 +68,11 @@ public class Commit {
         this.content = content;
     }
 
-    public UserModel getAuthor() {
+    public User getAuthor() {
         return author;
     }
 
-    public void setAuthor(UserModel author) {
+    public void setAuthor(User author) {
         this.author = author;
     }
 

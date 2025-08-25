@@ -7,9 +7,7 @@ import com.study.demo.modules.branch.repository.BranchRepository;
 import com.study.demo.modules.commit.model.Commit;
 import com.study.demo.modules.commit.service.CommitService;
 import com.study.demo.modules.file.model.FileResponseMapper;
-import com.study.demo.modules.file.model.FileVersion;
-import com.study.demo.modules.project.model.ProjectModel;
-import com.study.demo.modules.project.service.ProjectService;
+import com.study.demo.modules.project.model.Project;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,29 +19,27 @@ public class BranchServiceImpl implements BranchService {
 
     @Autowired
     private final BranchRepository repository;
-    private final ProjectService projectService;
     private final CommitService commitService;
 
-    public BranchServiceImpl(BranchRepository repository, ProjectService projectService, CommitService commitService) {
+    public BranchServiceImpl(BranchRepository repository, CommitService commitService) {
         this.repository = repository;
-        this.projectService = projectService;
         this.commitService = commitService;
     }
 
-    public void create(UUID projectId, BranchCreationDto branch) {
+    public void create(Project repo, BranchCreationDto branch) {
         try {
-            ProjectModel project = projectService.findById(projectId);
-            Optional<Branch> fromBranch = this.findByProjectAndName(project, branch.getFromBranch());
+            //ProjectModel project = projectService.findById(repo);
+            Optional<Branch> fromBranch = this.findByProjectAndName(repo, branch.getFromBranch());
             if (fromBranch.isEmpty()) {
                 throw new BadRequestException("(" + branch.getName() + ") branch origin not found for this project!");
             }
 
             Branch newBranch = new Branch();
             newBranch.setName(branch.getName());
-            newBranch.setProject(project);
+            newBranch.setProject(repo);
             newBranch.setHeadCommit(fromBranch.get().getHeadCommit());
 
-            newBranch.setDraftCommit(commitService.createDraft(project));
+            newBranch.setDraftCommit(commitService.createDraft(repo, newBranch));
 
             repository.save(newBranch);
         } catch (Throwable e) {
@@ -51,14 +47,17 @@ public class BranchServiceImpl implements BranchService {
         }
     }
 
-    public void createDefault(UUID projectId) {
+    public void createDefault(Project project) {
         try {
-            ProjectModel project = projectService.findById(projectId);
 
             Branch branch = new Branch();
             branch.setName("main");
             branch.setDefault(true);
             branch.setProject(project);
+
+            Commit draftCommit = commitService.createDraft(project, branch);
+            branch.setDraftCommit(draftCommit);
+            branch.setHeadCommit(draftCommit);
 
             repository.save(branch);
         } catch (Throwable e) {
@@ -66,25 +65,26 @@ public class BranchServiceImpl implements BranchService {
         }
     }
 
-    public Optional<Branch> findByProjectAndName(ProjectModel project, String name) {
+    public Optional<Branch> findByProjectAndName(Project project, String name) {
         return repository.findByProjectAndName(project, name);
     }
 
-    public BranchResponseMapper getFromHead(UUID repoId, String branch) throws BadRequestException {
-        ProjectModel project = projectService.findById(repoId);
-        Branch fromBranch = this.findByProjectAndName(project, branch).orElseThrow(() -> new BadRequestException(branch + " branch not found in this repository"));
-
-        List<Commit> commitList = fromBranch.getCommits().stream()
-                .sorted(Comparator.comparingLong(Commit::getCreatedAt)).toList();
+    public BranchResponseMapper getFromHead(Project repo, String branch) throws BadRequestException {
+        Branch fromBranch = this.findByProjectAndName(repo, branch).orElseThrow(() -> new BadRequestException(branch + " branch not found in this repository"));
 
         List<FileResponseMapper> headFiles = rebuildRepoAt(fromBranch.getHeadCommit().getId(), fromBranch.getDraftCommit().getId());
-
         return BranchResponseMapper.fromEntity(fromBranch, headFiles);
     }
 
     public List<FileResponseMapper> rebuildRepoAt(UUID commitId, UUID draftCommit) {
+        System.out.println("--rebuild at: 0");
         List<Commit> history = getCommitHistory(commitId);
         Map<String, FileResponseMapper> repoState = new HashMap<>();
+        System.out.println("--rebuild at: 1");
+
+        if (history.isEmpty()) {
+            return List.of();
+        }
 
         history.forEach(c -> {
             c.getFiles().forEach(f -> {
@@ -93,19 +93,27 @@ public class BranchServiceImpl implements BranchService {
                 }
             });
         });
+        System.out.println("--rebuild at: 2");
+
 
         return repoState.values().stream().toList();
     }
 
     private List<Commit> getCommitHistory(UUID commitId) {
+
         List<Commit> history = new ArrayList<>();
+        System.out.println("--get at: 0");
+
         Commit current = commitService.findById(commitId);
+        System.out.println(current.getCreatedAt());
 
         while (current != null) {
             history.addFirst(current);
-            current = current.getParent().getId() != null ? commitService.findById(current.getBranch().getId()) : null;
+            current = current.getParent() != null ? current.getParent() : null;
+            System.out.println(current);
         }
 
+        System.out.println("--get at: 2");
         return history;
     }
 

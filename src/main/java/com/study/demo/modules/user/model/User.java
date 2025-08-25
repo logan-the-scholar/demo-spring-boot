@@ -10,28 +10,36 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "users")
-public class UserModel {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    @Column(nullable = false)
+
+    @Column(nullable = false, unique = true)
     private String name;
+
     @Column(unique = true, nullable = false)
     private String email;
+
     private String password;
+
     private String profileImage;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserType userType;
+
     @Column(unique = true)
     private String sub;
+
     @OneToMany(mappedBy = "owner", cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, orphanRemoval = true)
     private List<WorkspaceModel> workspaces = new ArrayList<>();
+
     @OneToMany(mappedBy = "author", cascade = {CascadeType.PERSIST}, orphanRemoval = true)
     private List<File> authoredFiles = new ArrayList<>();
 
-    public UserModel() {
+    public User() {
     }
 
     public UUID getId() {

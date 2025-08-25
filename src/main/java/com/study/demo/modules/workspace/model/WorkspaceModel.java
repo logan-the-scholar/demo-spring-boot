@@ -1,7 +1,7 @@
 package com.study.demo.modules.workspace.model;
 
-import com.study.demo.modules.project.model.ProjectModel;
-import com.study.demo.modules.user.model.UserModel;
+import com.study.demo.modules.project.model.Project;
+import com.study.demo.modules.user.model.User;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -21,10 +21,10 @@ public class WorkspaceModel {
 
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = false)
-    private UserModel owner;
+    private User owner;
 
     @OneToMany(mappedBy = "workspace", cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, orphanRemoval = true)
-    private List<ProjectModel> projects = new ArrayList<>();
+    private List<Project> projects = new ArrayList<>();
 
     public WorkspaceModel() {
     }
@@ -45,19 +45,19 @@ public class WorkspaceModel {
         this.name = name;
     }
 
-    public UserModel getOwner() {
+    public User getOwner() {
         return owner;
     }
 
-    public void setOwner(UserModel owner) {
+    public void setOwner(User owner) {
         this.owner = owner;
     }
 
-    public List<ProjectModel> getProjects() {
+    public List<Project> getProjects() {
         return projects;
     }
 
-    public void setProjects(List<ProjectModel> projects) {
+    public void setProjects(List<Project> projects) {
         this.projects = projects;
     }
 

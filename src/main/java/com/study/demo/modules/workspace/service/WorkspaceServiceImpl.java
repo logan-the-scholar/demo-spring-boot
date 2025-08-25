@@ -1,7 +1,7 @@
 package com.study.demo.modules.workspace.service;
 
 import com.study.demo.common.exception.classes.EmptyResourcesException;
-import com.study.demo.modules.user.model.UserModel;
+import com.study.demo.modules.user.model.User;
 import com.study.demo.modules.user.service.UserService;
 import com.study.demo.modules.workspace.model.WorkspaceResponseMapper;
 import com.study.demo.modules.workspace.model.WorkspaceCreationDto;
@@ -37,7 +37,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
         return userService;
     }
 
-    public void createDefault(String name, UserModel owner) {
+    public void createDefault(String name, User owner) {
         WorkspaceModel createdWorkspace = new WorkspaceModel();
         createdWorkspace.setOwner(owner);
         createdWorkspace.setName(name);
@@ -46,7 +46,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
 
     public List<WorkspaceResponseMapper> findAllById(UUID uuid) {
         try {
-            UserModel owner = userService.getUserById(uuid);
+            User owner = userService.getUserById(uuid);
             List<WorkspaceModel> workspaces = repository.findByOwner(owner);
 
             if (workspaces.isEmpty()) {
@@ -57,7 +57,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
 
             }
 
-        } catch (BadRequestException e) {
+        } catch (Throwable e) {
             throw new RuntimeException(e);
 
         }
@@ -72,7 +72,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
             //"http://localhost:8080/demo/api/v0/workspace/{id}"
             //return URI();
 
-        } catch (BadRequestException e) {
+        } catch (Throwable e) {
             throw new RuntimeException(e);
 
         }

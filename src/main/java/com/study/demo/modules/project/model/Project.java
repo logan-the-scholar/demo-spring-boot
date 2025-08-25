@@ -1,17 +1,14 @@
 package com.study.demo.modules.project.model;
 
 import com.study.demo.modules.branch.model.Branch;
-import com.study.demo.modules.commit.model.Commit;
-import com.study.demo.modules.file.model.File;
 import com.study.demo.modules.workspace.model.WorkspaceModel;
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Entity(name = "projects")
-public class ProjectModel {
+public class Project {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -35,7 +32,7 @@ public class ProjectModel {
     @Column(name = "branches_ids")
     private List<Branch> branches;
 
-    public ProjectModel() {
+    public Project() {
     }
 
     public UUID getId() {

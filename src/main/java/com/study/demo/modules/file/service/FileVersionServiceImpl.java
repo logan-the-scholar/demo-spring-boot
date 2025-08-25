@@ -51,9 +51,11 @@ public class FileVersionServiceImpl implements FileVersionService {
 //            fileVersion.setParent(fileVersion.getFullPath().getLast());
 //        }
 
-        assert fileDto.getContent() != null;
-        if (fileDto.getContent().isEmpty()) {
-            fileVersion.setContent(fileDto.getContent());
+        String content = fileDto.getContent();
+        assert content != null;
+        if (!content.isEmpty()) {
+            byte[] buffer = Base64.getDecoder().decode(content);
+            fileVersion.setContent(new String(buffer, StandardCharsets.UTF_8));
         }
 
         repository.save(fileVersion);
@@ -98,11 +100,11 @@ public class FileVersionServiceImpl implements FileVersionService {
             file.setExtension(pFile.getNewExtension());
         }
 
-        assert pFile.getContent() != null;
-        if (!pFile.getContent().isBlank()) {
-            Base64.Decoder decoder = Base64.getDecoder();
-            byte[] decodedContent = decoder.decode(pFile.getContent());
-            file.setContent(new String(decodedContent, StandardCharsets.UTF_8));
+        String content = pFile.getContent();
+        assert content != null;
+        if (!content.isBlank()) {
+            byte[] buffer = Base64.getDecoder().decode(pFile.getContent());
+            file.setContent(new String(buffer, StandardCharsets.UTF_8));
         }
 
         return repository.save(file);

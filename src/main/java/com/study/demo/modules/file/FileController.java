@@ -40,7 +40,7 @@ public class FileController {
         }
     }
 
-    @PatchMapping("/b/{id}")
+    @PatchMapping("/repo/{id}")
     public ResponseEntity<?> update(@PathVariable String id, @RequestBody @Valid FileEditionDto bodyFile) {
         try {
             FileResponseMapper updatedFile = fileService.update(UUID.fromString(id), bodyFile);
