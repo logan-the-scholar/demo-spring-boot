@@ -1,6 +1,7 @@
 package com.study.demo.modules.file.model;
 
 import com.study.demo.common.validator.annotation.Base64Encoded;
+import com.study.demo.common.validator.annotation.IsPathFormat;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -19,6 +20,8 @@ public class FileCreationDto {
 
     private String extension;
 
+    @NotNull
+    @IsPathFormat
     private List<String> path;
 
     @NotBlank

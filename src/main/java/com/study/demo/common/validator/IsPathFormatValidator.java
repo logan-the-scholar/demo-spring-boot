@@ -19,12 +19,18 @@ public class IsPathFormatValidator implements ConstraintValidator<IsPathFormat, 
             return true;
         }
 
+        if (strings.isEmpty()) {
+            return false;
+        }
+
         String root = strings.getFirst();
-        if(root.length() > 1 || !root.startsWith(":")) {
+        if (root.length() > 1 || !root.startsWith(":")) {
             return false;
         }
 
         strings.removeFirst();
-        return strings.stream().allMatch((s) -> s.startsWith("/") && s.length() > 1);
+        boolean flag = strings.stream().allMatch((s) -> s.startsWith("/") && s.length() > 1);
+        strings.addFirst(root);
+        return flag;
     }
 }

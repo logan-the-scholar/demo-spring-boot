@@ -47,7 +47,7 @@ public class FileServiceImpl implements FileService {
             FileVersion firstVersion = fileVersionService.create(createdFile, branch.getDraftCommit(), pFile);
             //repository.save(createdFile);
 
-            return FileResponseMapper.fromEntity(firstVersion, branch.getId());
+            return FileResponseMapper.fromEntity(firstVersion, branch.getDraftCommit().getId());
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }

@@ -43,7 +43,7 @@ public class FileVersionServiceImpl implements FileVersionService {
         //TODO crear un validador de extensiones soportadas
         fileVersion.setExtension(fileDto.getExtension());
         fileVersion.setPath(formatedPath);
-        fileVersion.setCreatedAt(fileVersion.getCreatedAt());
+        fileVersion.setCreatedAt(fileDto.getCreatedAt());
 
 //        assert fileDto.getPath() != null;
 //        if (!fileDto.getPath().isEmpty()) {
@@ -52,8 +52,7 @@ public class FileVersionServiceImpl implements FileVersionService {
 //        }
 
         String content = fileDto.getContent();
-        assert content != null;
-        if (!content.isEmpty()) {
+        if (content != null && !content.isBlank()) {
             byte[] buffer = Base64.getDecoder().decode(content);
             fileVersion.setContent(new String(buffer, StandardCharsets.UTF_8));
         }
@@ -134,6 +133,7 @@ public class FileVersionServiceImpl implements FileVersionService {
     }
 
     public String formatPath(List<String> path, UUID commitId) throws BadRequestException {
+        System.out.println(String.join("", path));
         String root = path.getFirst();
         if (root.length() > 1 || !root.startsWith(":")) {
             throw new BadRequestException(root + " is not a valid root");
@@ -145,6 +145,6 @@ public class FileVersionServiceImpl implements FileVersionService {
             throw new BadRequestException(path.toString() + " is not a valid path");
         }
 
-        return commitId.toString() + ":" + path.stream().reduce(":", String::concat);
+        return commitId.toString() + path.stream().reduce(":", String::concat);
     }
 }
