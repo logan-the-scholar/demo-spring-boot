@@ -1,7 +1,7 @@
 package com.study.demo.modules.branch.model;
 
 import com.study.demo.modules.commit.model.Commit;
-import com.study.demo.modules.project.model.ProjectModel;
+import com.study.demo.modules.project.model.Project;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -18,19 +18,19 @@ public class Branch {
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private ProjectModel project;
+    private Project project;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = true)
-    @PrimaryKeyJoinColumn(name = "head_commit")
+    @OneToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "head_commit")
     private Commit headCommit;
+
+    @OneToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "draft_commit")
+    private Commit draftCommit;
 
     @Column(name = "is_default", nullable = false)
     private boolean isDefault;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @PrimaryKeyJoinColumn(name = "draft_commit")
-    private Commit draftCommit;
-    
     @OneToMany(mappedBy = "branch", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<Commit> commits;
 
@@ -53,11 +53,11 @@ public class Branch {
         this.name = name;
     }
 
-    public ProjectModel getProject() {
+    public Project getProject() {
         return project;
     }
 
-    public void setProject(ProjectModel project) {
+    public void setProject(Project project) {
         this.project = project;
     }
 

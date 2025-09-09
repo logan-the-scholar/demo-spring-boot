@@ -1,15 +1,18 @@
 package com.study.demo.modules.commit.service;
 
 import com.study.demo.common.exception.classes.ResourceNotFoundException;
+import com.study.demo.modules.branch.model.Branch;
 import com.study.demo.modules.commit.model.Commit;
 import com.study.demo.modules.commit.repository.CommitRepository;
 import com.study.demo.modules.file.service.FileVersionService;
-import com.study.demo.modules.project.model.ProjectModel;
-import com.study.demo.modules.user.model.UserModel;
+import com.study.demo.modules.project.model.Project;
+import com.study.demo.modules.user.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -24,7 +27,7 @@ public class CommitServiceImpl implements CommitService {
         this.fileVersionService = fileVersionService;
     }
 
-    public Commit createFromBase(ProjectModel project, UserModel author) {
+    public Commit createFromBase(Project project, User author) {
         Commit initialCommit = new Commit();
         initialCommit.setStatus("drafted");
         initialCommit.setProject(project);
@@ -39,17 +42,23 @@ public class CommitServiceImpl implements CommitService {
 
     }
 
-    public Commit createDraft(ProjectModel project) {
+    public Commit createDraft(Project project, Branch branch) {
         Commit draftCommit = new Commit();
         draftCommit.setStatus("drafted");
         draftCommit.setProject(project);
-        repository.save(draftCommit);
+        draftCommit.setBranch(branch);
+        draftCommit.setCreatedAt(Instant.now().toEpochMilli());
+        //repository.save(draftCommit);
 
         return draftCommit;
     }
 
-    public Commit findById(UUID commitId) {
-        return repository.findById(commitId).orElseThrow(() -> new ResourceNotFoundException("Commit " + commitId + " not found"));
+    public Commit findById(UUID commitId) throws ResourceNotFoundException {
+        Optional<Commit> commit =repository.findById(commitId);
+        if(commit.isEmpty()) {
+            throw new ResourceNotFoundException("Commit " + commitId + " not found");
+        }
+        return commit.get();
     }
 
     public List<Commit> findAllById(List<UUID> idLIst) {

@@ -14,7 +14,7 @@ public class Base64Validator implements ConstraintValidator<Base64Encoded, Strin
 
     @Override
     public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {
-        if ( s == null || s.isBlank()) {
+        if (s == null || s.isBlank()) {
             return true;
         }
         try {

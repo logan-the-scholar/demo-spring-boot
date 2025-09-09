@@ -3,6 +3,7 @@ package com.study.demo.modules.user.service;
 import com.study.demo.common.exception.classes.EmailAlreadyExistsException;
 import com.study.demo.common.exception.classes.InvalidCredentialsException;
 import com.study.demo.common.exception.classes.PasswordDontMatchException;
+import com.study.demo.common.exception.classes.ResourceNotFoundException;
 import com.study.demo.modules.github.mapper.AccessTokenResponse;
 import com.study.demo.modules.github.GithubAuthService;
 import com.study.demo.modules.github.mapper.GithubUserResponse;
@@ -12,7 +13,7 @@ import com.study.demo.modules.user.model.RegisterUserDto;
 import com.study.demo.modules.user.model.UserRecurrence;
 import com.study.demo.modules.user.model.UserType;
 import com.study.demo.modules.user.model.UserLoginResponseMapper;
-import com.study.demo.modules.user.model.UserModel;
+import com.study.demo.modules.user.model.User;
 import com.study.demo.modules.user.repository.UserRepository;
 import com.study.demo.modules.workspace.service.WorkspaceService;
 import org.apache.coyote.BadRequestException;
@@ -47,7 +48,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public UserLoginResponseMapper login(LoginUserDto user) {
-        Optional<UserModel> foundUser = repository.findByEmail(user.getEmail());
+        Optional<User> foundUser = repository.findByEmail(user.getEmail());
 
         boolean flag = foundUser.isPresent() && foundUser.get().getEmail().equalsIgnoreCase(user.getEmail())
                 && foundUser.get().getPassword().equalsIgnoreCase(user.getPassword());
@@ -70,13 +71,13 @@ public class UserServiceImpl implements UserService {
             throw new EmailAlreadyExistsException("This email is already on use");
         }
 
-        UserModel createdUser = new UserModel();
+        User createdUser = new User();
 
         createdUser.setName(user.getName());
         createdUser.setEmail(user.getEmail());
         createdUser.setPassword(user.getPassword());
         createdUser.setUserType(UserType.LOCAL);
-        UserModel user_ = repository.save(createdUser);
+        User user_ = repository.save(createdUser);
 
         workspaceService.createDefault(user_.getName(), user_);
 
@@ -88,7 +89,7 @@ public class UserServiceImpl implements UserService {
     public UserLoginResponseMapper githubSignIn(String code) {
         AccessTokenResponse tokens = userTokenService.getAccessToken(code);
         GithubUserResponse githubUser = userTokenService.getUserData(tokens.getAccessToken());
-        Optional<UserModel> existingUser = repository.findBySub("github|" + githubUser.getId());
+        Optional<User> existingUser = repository.findBySub("github|" + githubUser.getId());
 
         if (existingUser.isEmpty()) {
             if (repository.existsByEmail(githubUser.getEmail())) {
@@ -96,14 +97,14 @@ public class UserServiceImpl implements UserService {
 
             }
 
-            UserModel createdUser = new UserModel();
+            User createdUser = new User();
 
             createdUser.setName(githubUser.getNickname());
             createdUser.setEmail(githubUser.getEmail());
             createdUser.setSub("github|" + githubUser.getId());
             createdUser.setUserType(UserType.GITHUB);
             createdUser.setProfileImage(githubUser.getProfileImage());
-            UserModel savedUser = repository.save(createdUser);
+            User savedUser = repository.save(createdUser);
 
             workspaceService.createDefault(savedUser.getName(), savedUser);
 
@@ -112,28 +113,24 @@ public class UserServiceImpl implements UserService {
             return UserLoginResponseMapper.fromEntity(createdUser, UserRecurrence.FIRST_TIME);
 
         } else {
-            UserModel found = existingUser.get();
+            User found = existingUser.get();
 
             if (githubUser.getEmail().equalsIgnoreCase(found.getEmail())) {
                 userTokenService.updateOrCreate(tokens, found);
                 return UserLoginResponseMapper.fromEntity(found, UserRecurrence.WELCOME_BACK);
 
             } else {
-                //TODO
+                //TODO refactorizar
                 throw new EmailAlreadyExistsException("registered email and github id do not match, (refactorizar)");
             }
         }
     }
 
-    public UserModel getUserById(UUID uuid) throws BadRequestException {
-        Optional<UserModel> user = repository.findById(uuid);
+    public User getUserById(UUID uuid) {
+        return repository.findById(uuid).orElseThrow(() -> new ResourceNotFoundException("Can't find a user with this id"));
+    }
 
-        if (user.isPresent()) {
-            return user.get();
-
-        } else {
-            throw new BadRequestException("User not found");
-
-        }
+    public User getUserByName(String author) {
+        return repository.findByName(author).orElseThrow(() -> new ResourceNotFoundException("Can't find a user with this nickname"));
     }
 }

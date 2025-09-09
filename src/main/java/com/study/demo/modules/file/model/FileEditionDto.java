@@ -1,5 +1,6 @@
 package com.study.demo.modules.file.model;
 
+import com.study.demo.common.validator.annotation.Base64Encoded;
 import com.study.demo.common.validator.annotation.IsPathFormat;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
@@ -15,7 +16,8 @@ public class FileEditionDto {
     private UUID id;
 
     @NotBlank(message = "The modification must have an author")
-    private UUID author;
+    @Size(min = 4, max = 30)
+    private String author;
 
     @NotNull
     @IsPathFormat
@@ -25,6 +27,7 @@ public class FileEditionDto {
     private String newName;
 
     @Nullable
+    @Base64Encoded
     private String content;
 
     @Nullable
@@ -49,11 +52,11 @@ public class FileEditionDto {
         this.id = id;
     }
 
-    public @NotBlank(message = "The modification must have an author") UUID getAuthor() {
+    public @NotBlank(message = "The modification must have an author") @Size(min = 4, max = 30) String getAuthor() {
         return author;
     }
 
-    public void setAuthor(@NotBlank(message = "The modification must have an author") UUID author) {
+    public void setAuthor(@NotBlank(message = "The modification must have an author") @Size(min = 4, max = 30) String author) {
         this.author = author;
     }
 

@@ -2,9 +2,12 @@ package com.study.demo.modules.project.service;
 
 import com.study.demo.common.exception.classes.EmptyResourcesException;
 import com.study.demo.common.exception.classes.ResourceNotFoundException;
+import com.study.demo.modules.branch.model.BranchCreationDto;
+import com.study.demo.modules.branch.model.BranchResponseMapper;
+import com.study.demo.modules.branch.service.BranchService;
 import com.study.demo.modules.project.model.ProjectResponseMapper;
 import com.study.demo.modules.project.model.ProjectCreationDto;
-import com.study.demo.modules.project.model.ProjectModel;
+import com.study.demo.modules.project.model.Project;
 import com.study.demo.modules.project.repository.ProjectRepository;
 import com.study.demo.modules.workspace.service.WorkspaceService;
 import org.apache.coyote.BadRequestException;
@@ -21,11 +24,12 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Autowired
     private final ProjectRepository repository;
-
+    private final BranchService branchService;
     private final WorkspaceService workspaceService;
 
-    public ProjectServiceImpl(ProjectRepository repository, WorkspaceService workspaceService) {
+    public ProjectServiceImpl(ProjectRepository repository, BranchService branchService, WorkspaceService workspaceService) {
         this.repository = repository;
+        this.branchService = branchService;
         this.workspaceService = workspaceService;
     }
 
@@ -144,23 +148,23 @@ public class ProjectServiceImpl implements ProjectService {
 //    }
 
     public List<ProjectResponseMapper> findAllById(UUID workspaceId) {
-            List<ProjectModel> projects = repository.findByWorkspace(workspaceService.findById(workspaceId));
+        List<Project> projects = repository.findByWorkspace(workspaceService.findById(workspaceId));
 
-            if(projects.isEmpty()) {
-                throw new EmptyResourcesException("No projects found in this workspace");
-            }
+        if (projects.isEmpty()) {
+            throw new EmptyResourcesException("No projects found in this workspace");
+        }
 
-            return projects.stream().map(ProjectResponseMapper::fromEntity).toList();
+        return projects.stream().map(ProjectResponseMapper::fromEntity).toList();
     }
 
     public String create(ProjectCreationDto project) {
         try {
-            ProjectModel created = new ProjectModel();
+            Project created = new Project();
             created.setName(project.getName());
             created.setVisibility(project.getVisibility());
             created.setWorkspace(workspaceService.findById(project.getWorkspaceId()));
             repository.save(created);
-
+            branchService.createDefault(created);
             return created.getName();
 
         } catch (Throwable e) {
@@ -168,23 +172,43 @@ public class ProjectServiceImpl implements ProjectService {
         }
     }
 
-    public ProjectModel findById(UUID projectId) throws BadRequestException {
+    public Project findById(UUID projectId) throws BadRequestException {
         return repository.findById(projectId).orElseThrow(() -> new BadRequestException("Project not found"));
     }
 
     public Map<String, String> delete(UUID uuid) throws BadRequestException {
-        ProjectModel project = this.findById(uuid);
+        Project project = this.findById(uuid);
         repository.delete(project);
         return Map.of("message", "instance deleted successfully");
     }
 
     public ProjectResponseMapper get(UUID uuid) {
-        Optional<ProjectModel> foundProject = repository.findById(uuid);
-        if(foundProject.isPresent()) {
+        Optional<Project> foundProject = repository.findById(uuid);
+        if (foundProject.isPresent()) {
             return ProjectResponseMapper.fromEntityAndBranches(foundProject.get());
         }
 
         throw new ResourceNotFoundException("Project not found");
+    }
+
+    public BranchResponseMapper getFromHead(UUID repoId, String branch) {
+        try {
+            Project repo = findById(repoId);
+            return branchService.getFromHead(repo, branch);
+
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void createBranch(UUID repoId, BranchCreationDto branch) {
+        try {
+            Project repo = findById(repoId);
+            branchService.create(repo, branch);
+
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

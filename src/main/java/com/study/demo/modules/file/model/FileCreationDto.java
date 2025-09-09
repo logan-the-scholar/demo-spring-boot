@@ -1,5 +1,7 @@
 package com.study.demo.modules.file.model;
 
+import com.study.demo.common.validator.annotation.Base64Encoded;
+import com.study.demo.common.validator.annotation.IsPathFormat;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -14,14 +16,12 @@ public class FileCreationDto {
     private String name;
 
     @NotBlank(message = "The modification must have an author")
-    private UUID author;
+    private String author;
 
     private String extension;
 
-//    @NotNull
-//    private boolean isFolder;
-
-    //@Nullable
+    @NotNull
+    @IsPathFormat
     private List<String> path;
 
     @NotBlank
@@ -29,6 +29,7 @@ public class FileCreationDto {
     private String branch;
 
     @Nullable
+    @Base64Encoded
     private String content;
 
     @NotNull
@@ -42,11 +43,11 @@ public class FileCreationDto {
         this.name = name;
     }
 
-    public @NotBlank(message = "The modification must have an author") UUID getAuthor() {
+    public @NotBlank(message = "The modification must have an author") String getAuthor() {
         return author;
     }
 
-    public void setAuthor(@NotBlank(message = "The modification must have an author") UUID author) {
+    public void setAuthor(@NotBlank(message = "The modification must have an author") String author) {
         this.author = author;
     }
 

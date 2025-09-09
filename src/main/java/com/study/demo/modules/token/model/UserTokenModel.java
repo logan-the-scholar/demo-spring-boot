@@ -1,6 +1,6 @@
 package com.study.demo.modules.token.model;
 
-import com.study.demo.modules.user.model.UserModel;
+import com.study.demo.modules.user.model.User;
 import jakarta.persistence.*;
 
 import java.util.UUID;
@@ -14,7 +14,7 @@ public class UserTokenModel {
     private UUID id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    private UserModel user;
+    private User user;
 
     @Column(nullable = false)
     private String access;
@@ -39,11 +39,11 @@ public class UserTokenModel {
         this.id = id;
     }
 
-    public UserModel getUser() {
+    public User getUser() {
         return user;
     }
 
-    public void setUser(UserModel user) {
+    public void setUser(User user) {
         this.user = user;
     }
 

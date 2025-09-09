@@ -43,7 +43,7 @@ public class FileVersionServiceImpl implements FileVersionService {
         //TODO crear un validador de extensiones soportadas
         fileVersion.setExtension(fileDto.getExtension());
         fileVersion.setPath(formatedPath);
-        fileVersion.setCreatedAt(fileVersion.getCreatedAt());
+        fileVersion.setCreatedAt(fileDto.getCreatedAt());
 
 //        assert fileDto.getPath() != null;
 //        if (!fileDto.getPath().isEmpty()) {
@@ -51,9 +51,10 @@ public class FileVersionServiceImpl implements FileVersionService {
 //            fileVersion.setParent(fileVersion.getFullPath().getLast());
 //        }
 
-        assert fileDto.getContent() != null;
-        if (fileDto.getContent().isEmpty()) {
-            fileVersion.setContent(fileDto.getContent());
+        String content = fileDto.getContent();
+        if (content != null && !content.isBlank()) {
+            byte[] buffer = Base64.getDecoder().decode(content);
+            fileVersion.setContent(new String(buffer, StandardCharsets.UTF_8));
         }
 
         repository.save(fileVersion);
@@ -77,8 +78,7 @@ public class FileVersionServiceImpl implements FileVersionService {
             return this.create(file.getFile(), draftCommit, fileToCreate);
         }
 
-        assert pFile.getNewPath() != null;
-        if (!pFile.getNewPath().isEmpty()) {
+        if (pFile.getNewPath() != null && !pFile.getNewPath().isEmpty()) {
             String newPath = this.formatPath(pFile.getNewPath(), draftCommit.getId());
             if (repository.existsByPath(newPath)) {
                 throw new BadRequestException("The new path can't be a existing one");
@@ -88,21 +88,18 @@ public class FileVersionServiceImpl implements FileVersionService {
             file.setPath(newPath);
         }
 
-        assert pFile.getNewName() != null;
-        if (!pFile.getNewName().isEmpty()) {
+        if (pFile.getNewName() != null && !pFile.getNewName().isBlank()) {
             file.setName(pFile.getNewName());
         }
 
-        assert pFile.getNewExtension() != null;
-        if (!pFile.getNewExtension().isEmpty()) {
+        if (pFile.getNewExtension() != null && !pFile.getNewExtension().isBlank()) {
             file.setExtension(pFile.getNewExtension());
         }
 
-        assert pFile.getContent() != null;
-        if (!pFile.getContent().isBlank()) {
-            Base64.Decoder decoder = Base64.getDecoder();
-            byte[] decodedContent = decoder.decode(pFile.getContent());
-            file.setContent(new String(decodedContent, StandardCharsets.UTF_8));
+        String content = pFile.getContent();
+        if (content != null && !content.isBlank()) {
+            byte[] buffer = Base64.getDecoder().decode(pFile.getContent());
+            file.setContent(new String(buffer, StandardCharsets.UTF_8));
         }
 
         return repository.save(file);
@@ -143,6 +140,6 @@ public class FileVersionServiceImpl implements FileVersionService {
             throw new BadRequestException(path.toString() + " is not a valid path");
         }
 
-        return commitId.toString() + ":" + path.stream().reduce(":", String::concat);
+        return commitId.toString() + path.stream().reduce(":", String::concat);
     }
 }

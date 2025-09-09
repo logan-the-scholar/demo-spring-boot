@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 public record ProjectResponseMapper(UUID id, String name, ProjectVisibility visibility, List<String> branches) {
-    public static ProjectResponseMapper fromEntity(ProjectModel project) {
+    public static ProjectResponseMapper fromEntity(Project project) {
         return new ProjectResponseMapper(
                 project.getId(),
                 project.getName(),
@@ -15,7 +15,7 @@ public record ProjectResponseMapper(UUID id, String name, ProjectVisibility visi
         );
     }
 
-    public static ProjectResponseMapper fromEntityAndBranches(ProjectModel project) {
+    public static ProjectResponseMapper fromEntityAndBranches(Project project) {
         return new ProjectResponseMapper(
                 project.getId(),
                 project.getName(),

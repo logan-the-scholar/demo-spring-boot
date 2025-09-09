@@ -1,5 +1,8 @@
 package com.study.demo.modules.project;
 
+import com.study.demo.modules.branch.model.BranchCreationDto;
+import com.study.demo.modules.branch.model.BranchResponseMapper;
+import com.study.demo.modules.branch.service.BranchService;
 import com.study.demo.modules.file.model.FileEditionDto;
 import com.study.demo.modules.project.model.ProjectCreationDto;
 import com.study.demo.modules.project.service.ProjectService;
@@ -41,7 +44,7 @@ public class ProjectController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> get(@PathVariable String id) {
+    public ResponseEntity<?> getAndBranches(@PathVariable String id) {
         try {
             return ResponseEntity.ok(projectService.get(UUID.fromString(id)));
         } catch (Throwable e) {
@@ -52,11 +55,11 @@ public class ProjectController {
         }
     }
 
-    @MessageMapping("/{id}/session")
-    @SendTo("/topic/project/{id}")
-    public FileEditionDto broadcastEditCode(@DestinationVariable String id, @RequestBody @Valid FileEditionDto editedFile) {
-        return editedFile;
-    }
+//    @MessageMapping("/{id}/session")
+//    @SendTo("/topic/project/{id}")
+//    public FileEditionDto broadcastEditCode(@DestinationVariable String id, @RequestBody @Valid FileEditionDto editedFile) {
+//        return editedFile;
+//    }
 
     //@CrossOrigin(exposedHeaders = "Location")
     @PostMapping()
@@ -77,6 +80,26 @@ public class ProjectController {
         } catch (Throwable e) {
             return ResponseEntity.status(400).body(e.getMessage());
 
+        }
+    }
+
+    @PostMapping("/{id}/branch")
+    public ResponseEntity<?> createBranch(@PathVariable String id, @RequestBody @Valid BranchCreationDto body) {
+        try {
+            projectService.createBranch(UUID.fromString(id), body);
+            return ResponseEntity.status(200).body(Map.of("message", body.getName() + " successfully created"));
+        } catch (Throwable e) {
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/{id}/branch/{branch}")
+    public ResponseEntity<?> getAndFiles(@PathVariable String id, @PathVariable String branch) {
+        try {
+            BranchResponseMapper branchResponse = projectService.getFromHead(UUID.fromString(id), branch);
+            return ResponseEntity.ok(branchResponse);
+        } catch (Throwable e) {
+            return ResponseEntity.status(400).body(e.getMessage());
         }
     }
 }

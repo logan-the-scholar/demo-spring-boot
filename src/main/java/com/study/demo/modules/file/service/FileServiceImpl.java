@@ -6,8 +6,8 @@ import com.study.demo.modules.branch.service.BranchService;
 import com.study.demo.modules.file.model.*;
 import com.study.demo.modules.file.repository.FileRepository;
 import com.study.demo.modules.project.service.ProjectService;
-import com.study.demo.modules.project.model.ProjectModel;
-import com.study.demo.modules.user.model.UserModel;
+import com.study.demo.modules.project.model.Project;
+import com.study.demo.modules.user.model.User;
 import com.study.demo.modules.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,22 +32,22 @@ public class FileServiceImpl implements FileService {
         this.branchService = branchService;
     }
 
-    public FileResponseMapper createFile(UUID projectId, FileCreationDto file) {
+    public FileResponseMapper createFile(UUID projectId, FileCreationDto pFile) {
         try {
-            ProjectModel project = projectService.findById(projectId);
-            UserModel author = userService.getUserById(file.getAuthor());
+            Project project = projectService.findById(projectId);
+            User author = userService.getUserByName(pFile.getAuthor());
 
-            Branch branch = branchService.findByProjectAndName(project, file.getBranch()).orElseThrow(() ->
-                    new ResourceNotFoundException(file.getBranch() + " branch can't be found"));
+            Branch branch = branchService.findByProjectAndName(project, pFile.getBranch()).orElseThrow(() ->
+                    new ResourceNotFoundException(pFile.getBranch() + " branch can't be found"));
 
             File createdFile = new File();
             createdFile.setProject(project);
             createdFile.setAuthor(author);
 
-            FileVersion firstVersion = fileVersionService.create(createdFile, branch.getDraftCommit(), file);
+            FileVersion firstVersion = fileVersionService.create(createdFile, branch.getDraftCommit(), pFile);
             //repository.save(createdFile);
 
-            return FileResponseMapper.fromEntity(firstVersion, branch.getId());
+            return FileResponseMapper.fromEntity(firstVersion, branch.getDraftCommit().getId());
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
@@ -55,36 +55,14 @@ public class FileServiceImpl implements FileService {
 
     public FileResponseMapper update(UUID projectId, FileEditionDto pFile) {
         try {
-            ProjectModel project = projectService.findById(projectId);
+            Project project = projectService.findById(projectId);
+            User author = userService.getUserByName(pFile.getAuthor());
 
             Branch branch = branchService.findByProjectAndName(project, pFile.getBranch()).orElseThrow(() ->
                     new ResourceNotFoundException(pFile.getBranch() + " branch can't be found"));
 
-//            if (!fileVersionService.existsByPath(pFile.getPath(), branch.getDraftCommit().getId())) {
-//                File refFile = this.findById(pFile.getId());
-//                FileCreationDto aaa = new FileCreationDto();
-//
-//                aaa.setExtension();
-//                aaa.setName();
-//                aaa.setPath();
-//                aaa.setContent();
-//
-//                return FileResponseMapper.fromEntity(fileVersionService.create(refFile, branch.getDraftCommit(), aaa));
-//
-//            } else {
-                return FileResponseMapper.fromEntity(fileVersionService.update(branch.getDraftCommit(), pFile), branch.getId());
+            return FileResponseMapper.fromEntity(fileVersionService.update(branch.getDraftCommit(), pFile), branch.getId());
 
-            //}
-//            if (pFile.getNewPath() != null) {
-//
-//            }
-//            if (pFile.getNewName() != null) {
-//                file.setName(pFile.getNewName());
-//            }
-//            if (pFile.getNewExtension() != null) {
-//                file.setExtension(pFile.getNewExtension());
-//            }
-            //return FileResponseMapper.fromEntity(file);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }

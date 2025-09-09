@@ -1,12 +1,9 @@
 package com.study.demo.modules.file.model;
 
-import com.study.demo.modules.project.model.ProjectModel;
-import com.study.demo.modules.user.model.UserModel;
+import com.study.demo.modules.project.model.Project;
+import com.study.demo.modules.user.model.User;
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Entity(name = "files")
@@ -21,13 +18,13 @@ public class File {
 
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", nullable = false)
-    private ProjectModel project;
+    private Project project;
 
 //    private String extension;
 
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", nullable = false)
-    private UserModel author;
+    private User author;
 
 //    @OneToMany(cascade = CascadeType.ALL, mappedBy = "parent", orphanRemoval = true)
 //    private List<File> children = new ArrayList<>();
@@ -58,11 +55,11 @@ public class File {
 //        this.name = name;
 //    }
 
-    public ProjectModel getProject() {
+    public Project getProject() {
         return project;
     }
 
-    public void setProject(ProjectModel project) {
+    public void setProject(Project project) {
         this.project = project;
     }
 
@@ -74,11 +71,11 @@ public class File {
 //        this.extension = extension;
 //    }
 
-    public UserModel getAuthor() {
+    public User getAuthor() {
         return author;
     }
 
-    public void setAuthor(UserModel author) {
+    public void setAuthor(User author) {
         this.author = author;
     }
 

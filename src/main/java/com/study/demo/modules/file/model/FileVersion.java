@@ -1,7 +1,7 @@
 package com.study.demo.modules.file.model;
 
 import com.study.demo.modules.commit.model.Commit;
-import com.study.demo.modules.user.model.UserModel;
+import com.study.demo.modules.user.model.User;
 import jakarta.persistence.*;
 
 import java.util.UUID;
@@ -27,7 +27,7 @@ public class FileVersion {
 
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", nullable = false)
-    private UserModel author;
+    private User author;
 
     @Column(name = "path")
     private String path;
@@ -85,11 +85,11 @@ public class FileVersion {
         this.content = content;
     }
 
-    public UserModel getAuthor() {
+    public User getAuthor() {
         return author;
     }
 
-    public void setAuthor(UserModel author) {
+    public void setAuthor(User author) {
         this.author = author;
     }
 

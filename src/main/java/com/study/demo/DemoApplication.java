@@ -47,7 +47,7 @@ public class DemoApplication {
                 registry.addMapping("/**")
                         .allowedOrigins("http://localhost:3000")
                         .allowedHeaders("*")
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
                         .allowCredentials(true);
             }
         };
