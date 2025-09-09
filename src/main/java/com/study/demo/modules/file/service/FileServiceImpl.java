@@ -61,31 +61,8 @@ public class FileServiceImpl implements FileService {
             Branch branch = branchService.findByProjectAndName(project, pFile.getBranch()).orElseThrow(() ->
                     new ResourceNotFoundException(pFile.getBranch() + " branch can't be found"));
 
-//            if (!fileVersionService.existsByPath(pFile.getPath(), branch.getDraftCommit().getId())) {
-//                File refFile = this.findById(pFile.getId());
-//                FileCreationDto aaa = new FileCreationDto();
-//
-//                aaa.setExtension();
-//                aaa.setName();
-//                aaa.setPath();
-//                aaa.setContent();
-//
-//                return FileResponseMapper.fromEntity(fileVersionService.create(refFile, branch.getDraftCommit(), aaa));
-//
-//            } else {
-                return FileResponseMapper.fromEntity(fileVersionService.update(branch.getDraftCommit(), pFile), branch.getId());
+            return FileResponseMapper.fromEntity(fileVersionService.update(branch.getDraftCommit(), pFile), branch.getId());
 
-            //}
-//            if (pFile.getNewPath() != null) {
-//
-//            }
-//            if (pFile.getNewName() != null) {
-//                file.setName(pFile.getNewName());
-//            }
-//            if (pFile.getNewExtension() != null) {
-//                file.setExtension(pFile.getNewExtension());
-//            }
-            //return FileResponseMapper.fromEntity(file);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }

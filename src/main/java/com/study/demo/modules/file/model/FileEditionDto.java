@@ -1,5 +1,6 @@
 package com.study.demo.modules.file.model;
 
+import com.study.demo.common.validator.annotation.Base64Encoded;
 import com.study.demo.common.validator.annotation.IsPathFormat;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
@@ -26,6 +27,7 @@ public class FileEditionDto {
     private String newName;
 
     @Nullable
+    @Base64Encoded
     private String content;
 
     @Nullable

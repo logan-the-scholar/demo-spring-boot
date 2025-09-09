@@ -78,8 +78,7 @@ public class FileVersionServiceImpl implements FileVersionService {
             return this.create(file.getFile(), draftCommit, fileToCreate);
         }
 
-        assert pFile.getNewPath() != null;
-        if (!pFile.getNewPath().isEmpty()) {
+        if (pFile.getNewPath() != null && !pFile.getNewPath().isEmpty()) {
             String newPath = this.formatPath(pFile.getNewPath(), draftCommit.getId());
             if (repository.existsByPath(newPath)) {
                 throw new BadRequestException("The new path can't be a existing one");
@@ -89,19 +88,16 @@ public class FileVersionServiceImpl implements FileVersionService {
             file.setPath(newPath);
         }
 
-        assert pFile.getNewName() != null;
-        if (!pFile.getNewName().isEmpty()) {
+        if (pFile.getNewName() != null && !pFile.getNewName().isBlank()) {
             file.setName(pFile.getNewName());
         }
 
-        assert pFile.getNewExtension() != null;
-        if (!pFile.getNewExtension().isEmpty()) {
+        if (pFile.getNewExtension() != null && !pFile.getNewExtension().isBlank()) {
             file.setExtension(pFile.getNewExtension());
         }
 
         String content = pFile.getContent();
-        assert content != null;
-        if (!content.isBlank()) {
+        if (content != null && !content.isBlank()) {
             byte[] buffer = Base64.getDecoder().decode(pFile.getContent());
             file.setContent(new String(buffer, StandardCharsets.UTF_8));
         }
@@ -133,7 +129,6 @@ public class FileVersionServiceImpl implements FileVersionService {
     }
 
     public String formatPath(List<String> path, UUID commitId) throws BadRequestException {
-        System.out.println(String.join("", path));
         String root = path.getFirst();
         if (root.length() > 1 || !root.startsWith(":")) {
             throw new BadRequestException(root + " is not a valid root");
