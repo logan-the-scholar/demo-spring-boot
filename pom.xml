@@ -100,11 +100,11 @@
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.hibernate.search/hibernate-search-mapper-orm -->
-		<dependency>
+		<!-- dependency>
 			<groupId>org.hibernate.search</groupId>
 			<artifactId>hibernate-search-mapper-orm</artifactId>
 			<version>6.2.1.Final</version>
-		</dependency>
+		</dependency -->
 
 		<dependency>
 			<groupId>jakarta.persistence</groupId>
@@ -141,12 +141,15 @@
 
 	<build>
 		<plugins>
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.1</version>
 				<configuration>
+				        <compilerArgs>
+				            <arg>-parameters</arg>
+				        </compilerArgs>
+
 					<annotationProcessorPaths>
 						<path>
 							<groupId>org.projectlombok</groupId>

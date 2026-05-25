@@ -1,5 +1,6 @@
 package com.study.demo.modules.file.model;
 
+import com.study.demo.modules.commit.model.Commit;
 import com.study.demo.modules.project.model.Project;
 import com.study.demo.modules.user.model.User;
 import jakarta.persistence.*;
@@ -25,6 +26,10 @@ public class File {
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", nullable = false)
     private User author;
+
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "commit_id", nullable = false)
+    private Commit commit;
 
 //    @OneToMany(cascade = CascadeType.ALL, mappedBy = "parent", orphanRemoval = true)
 //    private List<File> children = new ArrayList<>();
@@ -79,6 +84,13 @@ public class File {
         this.author = author;
     }
 
+    public Commit getCommit() {
+        return commit;
+    }
+
+    public void setCommit(Commit commit) {
+        this.commit = commit;
+    }
 //    public List<File> getChildren() {
 //        return children;
 //    }

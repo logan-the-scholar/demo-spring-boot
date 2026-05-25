@@ -5,6 +5,7 @@ import com.study.demo.modules.branch.model.BranchResponseMapper;
 import com.study.demo.modules.project.model.ProjectResponseMapper;
 import com.study.demo.modules.project.model.ProjectCreationDto;
 import com.study.demo.modules.project.model.Project;
+import com.study.demo.modules.user.model.User;
 import org.apache.coyote.BadRequestException;
 
 import java.util.List;

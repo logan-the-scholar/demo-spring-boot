@@ -42,11 +42,12 @@ public class CommitServiceImpl implements CommitService {
 
     }
 
-    public Commit createDraft(Project project, Branch branch) {
+    public Commit createDraft(Project project, Branch branch, User author) {
         Commit draftCommit = new Commit();
         draftCommit.setStatus("drafted");
         draftCommit.setProject(project);
         draftCommit.setBranch(branch);
+        draftCommit.setAuthor(author);
         draftCommit.setCreatedAt(Instant.now().toEpochMilli());
         //repository.save(draftCommit);
 

@@ -8,6 +8,8 @@ import com.study.demo.modules.commit.model.Commit;
 import com.study.demo.modules.commit.service.CommitService;
 import com.study.demo.modules.file.model.FileResponseMapper;
 import com.study.demo.modules.project.model.Project;
+import com.study.demo.modules.user.model.User;
+import com.study.demo.modules.user.service.UserService;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,10 +22,12 @@ public class BranchServiceImpl implements BranchService {
     @Autowired
     private final BranchRepository repository;
     private final CommitService commitService;
+    private final UserService userService;
 
-    public BranchServiceImpl(BranchRepository repository, CommitService commitService) {
+    public BranchServiceImpl(BranchRepository repository, CommitService commitService, UserService userService) {
         this.repository = repository;
         this.commitService = commitService;
+        this.userService = userService;
     }
 
     public void create(Project repo, BranchCreationDto branch) {
@@ -39,7 +43,8 @@ public class BranchServiceImpl implements BranchService {
             newBranch.setProject(repo);
             newBranch.setHeadCommit(fromBranch.get().getHeadCommit());
 
-            newBranch.setDraftCommit(commitService.createDraft(repo, newBranch));
+            User author = userService.getUserByName(branch.getAuthor());
+            newBranch.setDraftCommit(commitService.createDraft(repo, newBranch, author));
 
             repository.save(newBranch);
         } catch (Throwable e) {
@@ -55,7 +60,7 @@ public class BranchServiceImpl implements BranchService {
             branch.setDefault(true);
             branch.setProject(project);
 
-            Commit draftCommit = commitService.createDraft(project, branch);
+            Commit draftCommit = commitService.createDraft(project, branch, project.getWorkspace().getOwner());
             branch.setDraftCommit(draftCommit);
             branch.setHeadCommit(draftCommit);
 

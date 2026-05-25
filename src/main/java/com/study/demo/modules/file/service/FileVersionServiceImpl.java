@@ -29,7 +29,7 @@ public class FileVersionServiceImpl implements FileVersionService {
 
     public FileVersion create(File file, Commit commit, FileCreationDto fileDto) throws BadRequestException {
 
-        String formatedPath = this.formatPath(fileDto.getPath(), commit.getId());
+        String formatedPath = this.formatPath(fileDto.getPath());
 
         if (this.repository.existsByPath(formatedPath)) {
             throw new BadRequestException("This file already exists in this branch");
@@ -63,7 +63,7 @@ public class FileVersionServiceImpl implements FileVersionService {
 
     public FileVersion update(Commit draftCommit, FileEditionDto pFile) throws BadRequestException {
         FileVersion file = this.findById(pFile.getId());
-        String path = this.formatPath(pFile.getPath(), draftCommit.getId());
+        String path = this.formatPath(pFile.getPath());
 
         if (!repository.existsByPath(path)) {
             FileCreationDto fileToCreate = new FileCreationDto();
@@ -79,7 +79,7 @@ public class FileVersionServiceImpl implements FileVersionService {
         }
 
         if (pFile.getNewPath() != null && !pFile.getNewPath().isEmpty()) {
-            String newPath = this.formatPath(pFile.getNewPath(), draftCommit.getId());
+            String newPath = this.formatPath(pFile.getNewPath());
             if (repository.existsByPath(newPath)) {
                 throw new BadRequestException("The new path can't be a existing one");
             }
@@ -110,8 +110,12 @@ public class FileVersionServiceImpl implements FileVersionService {
     }
 
     public boolean existsByPath(List<String> path, UUID commitId) throws BadRequestException {
-        String formatedPath = this.formatPath(path, commitId);
+        String formatedPath = this.formatPath(path);
         return this.existsByPath(formatedPath);
+    }
+
+    public void delete(FileVersion fileVersion) {
+        repository.delete(fileVersion);
     }
 
     public FileVersion findById(UUID id) {
@@ -124,11 +128,15 @@ public class FileVersionServiceImpl implements FileVersionService {
         }
     }
 
-    public Optional<FileVersion> findByFile(File originalFile) {
+    public List<FileVersion> findByFile(File originalFile) {
         return repository.findByFile(originalFile);
     }
 
-    public String formatPath(List<String> path, UUID commitId) throws BadRequestException {
+//    public Optional<FileVersion> findByFile(File originalFile) {
+//        return repository.findByFile(originalFile);
+//    }
+
+    public String formatPath(List<String> path) throws BadRequestException {
         String root = path.getFirst();
         if (root.length() > 1 || !root.startsWith(":")) {
             throw new BadRequestException(root + " is not a valid root");
@@ -140,6 +148,6 @@ public class FileVersionServiceImpl implements FileVersionService {
             throw new BadRequestException(path.toString() + " is not a valid path");
         }
 
-        return commitId.toString() + path.stream().reduce(":", String::concat);
+        return "0" + path.stream().reduce(":", String::concat);
     }
 }

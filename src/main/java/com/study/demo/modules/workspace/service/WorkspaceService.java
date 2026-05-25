@@ -11,6 +11,7 @@ import java.util.UUID;
 public interface WorkspaceService {
     void createDefault(String name, User owner);
     List<WorkspaceResponseMapper> findAllById(UUID uuid);
+    List<WorkspaceResponseMapper> findAllByName(String name);
     void create(WorkspaceCreationDto workspace);
     WorkspaceModel findById(UUID id);
 }
