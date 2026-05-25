@@ -22,7 +22,7 @@ public class Commit {
     @Column(nullable = true)
     private String content;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private User author;
 
     @Column(nullable = false)

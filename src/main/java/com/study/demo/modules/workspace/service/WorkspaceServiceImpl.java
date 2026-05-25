@@ -63,6 +63,25 @@ public class WorkspaceServiceImpl implements WorkspaceService {
         }
     }
 
+    public List<WorkspaceResponseMapper> findAllByName(String name) {
+        try {
+            User owner = userService.getUserByName(name);
+            List<WorkspaceModel> workspaces = repository.findByOwner(owner);
+
+            if (workspaces.isEmpty()) {
+                throw new RuntimeException("No workspaces found");
+
+            } else {
+                return workspaces.stream().map(WorkspaceResponseMapper::fromEntity).toList();
+
+            }
+
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+
+        }
+    }
+
     public void create(WorkspaceCreationDto workspace) {
         try {
             WorkspaceModel createdWorkspace = new WorkspaceModel();

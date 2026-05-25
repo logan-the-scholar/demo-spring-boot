@@ -20,10 +20,10 @@ public class WorkspaceController {
         this.workspaceService = workspaceService;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getWorkspaces(@PathVariable String id) {
+    @GetMapping("/{name}")
+    public ResponseEntity<?> getWorkspaces(@PathVariable String name) {
         try {
-            List<WorkspaceResponseMapper> workspaces = workspaceService.findAllById(UUID.fromString(id));
+            List<WorkspaceResponseMapper> workspaces = workspaceService.findAllByName(name);
             return ResponseEntity.status(200).body(workspaces);
 
         } catch (Throwable error) {

@@ -1,5 +1,6 @@
 package com.study.demo.modules.file;
 
+import com.study.demo.modules.file.model.FileDeletionDto;
 import com.study.demo.modules.file.model.FileResponseMapper;
 import com.study.demo.modules.file.model.FileCreationDto;
 import com.study.demo.modules.file.model.FileEditionDto;
@@ -50,11 +51,11 @@ public class FileController {
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable UUID id) {
+    @DeleteMapping("")
+    public ResponseEntity<?> delete(@RequestBody @Valid FileDeletionDto bodyFile) {
         try {
-            fileService.delete(id);
-            return ResponseEntity.status(200).body(Map.of("message", id + " successfully deleted"));
+            fileService.delete(bodyFile);
+            return ResponseEntity.status(200).body(Map.of("message", bodyFile.getFileId() + " successfully deleted"));
         } catch (Throwable e) {
             return ResponseEntity.status(400).body(e.getMessage());
         }

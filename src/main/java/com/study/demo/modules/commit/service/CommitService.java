@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public interface CommitService {
     Commit createFromBase(Project project, User author);
-    Commit createDraft(Project project, Branch branch);
+    Commit createDraft(Project project, Branch branch, User author);
     Commit findById(UUID commitId);
     List<Commit> findAllById(List<UUID> idLIst);
 }

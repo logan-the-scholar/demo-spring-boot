@@ -9,6 +9,7 @@ import com.study.demo.modules.project.model.ProjectResponseMapper;
 import com.study.demo.modules.project.model.ProjectCreationDto;
 import com.study.demo.modules.project.model.Project;
 import com.study.demo.modules.project.repository.ProjectRepository;
+import com.study.demo.modules.workspace.model.WorkspaceModel;
 import com.study.demo.modules.workspace.service.WorkspaceService;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -162,7 +163,8 @@ public class ProjectServiceImpl implements ProjectService {
             Project created = new Project();
             created.setName(project.getName());
             created.setVisibility(project.getVisibility());
-            created.setWorkspace(workspaceService.findById(project.getWorkspaceId()));
+            WorkspaceModel workspace = workspaceService.findById(project.getWorkspaceId());
+            created.setWorkspace(workspace);
             repository.save(created);
             branchService.createDefault(created);
             return created.getName();
